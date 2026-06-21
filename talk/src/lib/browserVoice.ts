@@ -25,7 +25,11 @@ function floatToPCM16(input: Float32Array): Int16Array {
   return out;
 }
 
-function resample(input: Float32Array, fromRate: number, toRate: number): Float32Array {
+function resample(
+  input: Float32Array,
+  fromRate: number,
+  toRate: number,
+): Float32Array {
   if (fromRate === toRate) return input;
   const ratio = fromRate / toRate;
   const outLen = Math.floor(input.length / ratio);
@@ -121,8 +125,8 @@ export class BrowserVoiceClient {
 
     try {
       const AudioContextClass =
-        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ||
-        window.AudioContext;
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext || window.AudioContext;
       this.audioCtx = new AudioContextClass({ sampleRate: SAMPLE_RATE });
       this.contextRate = this.audioCtx.sampleRate;
       this.playbackTime = this.audioCtx.currentTime;
@@ -148,7 +152,9 @@ export class BrowserVoiceClient {
         if (name === "NotAllowedError" || name === "SecurityError") {
           // Either the user denied the prompt, OR the page is embedded in an
           // iframe (e.g. the Replit preview/canvas) that withholds the mic.
-          throw new Error(window.self !== window.top ? "MIC_BLOCKED_IFRAME" : "MIC_DENIED");
+          throw new Error(
+            window.self !== window.top ? "MIC_BLOCKED_IFRAME" : "MIC_DENIED",
+          );
         }
         if (name === "NotFoundError" || name === "OverconstrainedError") {
           throw new Error("MIC_NOT_FOUND");
@@ -164,7 +170,8 @@ export class BrowserVoiceClient {
       await new Promise<void>((resolve, reject) => {
         if (!this.ws) return reject(new Error("WebSocket not initialized"));
         this.ws.onopen = () => resolve();
-        this.ws.onerror = () => reject(new Error("WebSocket connection failed"));
+        this.ws.onerror = () =>
+          reject(new Error("WebSocket connection failed"));
       });
       if (this.aborted) throw new Error("aborted");
 
@@ -218,7 +225,10 @@ export class BrowserVoiceClient {
     // started speaking and triggers a response.cancel server-side.
     const resampled = resample(input, this.contextRate, SAMPLE_RATE);
     const pcm16 = floatToPCM16(resampled);
-    const ab = pcm16.buffer.slice(pcm16.byteOffset, pcm16.byteOffset + pcm16.byteLength) as ArrayBuffer;
+    const ab = pcm16.buffer.slice(
+      pcm16.byteOffset,
+      pcm16.byteOffset + pcm16.byteLength,
+    ) as ArrayBuffer;
     const b64 = arrayBufferToBase64(ab);
     this.ws.send(JSON.stringify({ type: "audio", data: b64 }));
   }
@@ -264,7 +274,8 @@ export class BrowserVoiceClient {
       return;
     }
     if (this.aiSpeakingTimer) clearTimeout(this.aiSpeakingTimer);
-    const remainingMs = Math.max(0, this.playbackTime - this.audioCtx.currentTime) * 1000;
+    const remainingMs =
+      Math.max(0, this.playbackTime - this.audioCtx.currentTime) * 1000;
     this.aiSpeakingTimer = setTimeout(() => {
       this.aiSpeakingTimer = null;
       if (!this.audioCtx) {
@@ -317,7 +328,11 @@ export class BrowserVoiceClient {
       // Server detected the caller speaking over the AI — stop AI audio
       // immediately so the caller hears only their own voice.
       this.flushAiAudio();
-    } else if (msg.type === "transcript" && typeof msg.role === "string" && typeof msg.text === "string") {
+    } else if (
+      msg.type === "transcript" &&
+      typeof msg.role === "string" &&
+      typeof msg.text === "string"
+    ) {
       this.callbacks.onTranscript?.({
         role: msg.role as "user" | "assistant",
         text: msg.text,
@@ -371,8 +386,16 @@ export class BrowserVoiceClient {
     }
     this.aiSpeaking = false;
     for (const src of this.scheduledSources) {
-      try { src.stop(); } catch { /* ignore */ }
-      try { src.disconnect(); } catch { /* ignore */ }
+      try {
+        src.stop();
+      } catch {
+        /* ignore */
+      }
+      try {
+        src.disconnect();
+      } catch {
+        /* ignore */
+      }
     }
     this.scheduledSources = [];
     try {

@@ -67,7 +67,10 @@ export function CostRailsCard() {
     );
   }
 
-  const pct = Math.min(100, (status.usedMinutesToday / status.dailyBudgetMinutes) * 100);
+  const pct = Math.min(
+    100,
+    (status.usedMinutesToday / status.dailyBudgetMinutes) * 100,
+  );
   const barColor =
     pct >= 100 ? "bg-red-500" : pct >= 75 ? "bg-orange-400" : "bg-emerald-400";
   const resetsAt = new Date(status.resetsAt);
@@ -110,21 +113,31 @@ export function CostRailsCard() {
           />
         </div>
         <div className="text-[11px] text-gray-500 mt-1">
-          Resets at {resetsAt.toLocaleTimeString()} ({resetsAt.toLocaleDateString()} UTC midnight)
+          Resets at {resetsAt.toLocaleTimeString()} (
+          {resetsAt.toLocaleDateString()} UTC midnight)
         </div>
       </div>
 
       {pct >= 100 && (
         <div className="flex items-start gap-2 text-xs text-red-300 bg-red-950/40 border border-red-900/50 rounded-lg p-2">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>Daily budget reached — public calls are auto-paused until UTC midnight.</span>
+          <span>
+            Daily budget reached — public calls are auto-paused until UTC
+            midnight.
+          </span>
         </div>
       )}
 
       <div className="flex items-center justify-between pt-2 border-t border-gray-800">
         <div className="text-xs">
           <div className="text-gray-400">Kill switch</div>
-          <div className={status.enabled ? "text-emerald-400 font-medium" : "text-red-400 font-medium"}>
+          <div
+            className={
+              status.enabled
+                ? "text-emerald-400 font-medium"
+                : "text-red-400 font-medium"
+            }
+          >
             {status.enabled ? "Public calls ACTIVE" : "Public calls PAUSED"}
           </div>
         </div>
@@ -142,9 +155,7 @@ export function CostRailsCard() {
         </button>
       </div>
 
-      {error && (
-        <div className="text-xs text-red-400">Error: {error}</div>
-      )}
+      {error && <div className="text-xs text-red-400">Error: {error}</div>}
     </div>
   );
 }

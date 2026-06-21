@@ -1,16 +1,44 @@
 import { useState, useEffect, useRef } from "react";
-import { Phone, PhoneOff, Mic, Loader2, Radio, AlertTriangle, Globe } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Phone,
+  PhoneOff,
+  Mic,
+  Loader2,
+  Radio,
+  AlertTriangle,
+  Globe,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useTriggerCheck, getGetStatusQueryKey } from "@workspace/api-client-react";
+import {
+  useTriggerCheck,
+  getGetStatusQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { BrowserVoiceClient, micErrorMessage, type VoiceState, type TranscriptEntry } from "@/lib/browserVoice";
+import {
+  BrowserVoiceClient,
+  micErrorMessage,
+  type VoiceState,
+  type TranscriptEntry,
+} from "@/lib/browserVoice";
 import { ShareCallLinkButton } from "@/components/ShareCallLinkButton";
 
-export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+export function CallModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -27,7 +55,9 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
       {
         onSuccess: (res) => {
           toast({
-            title: res.triggered ? "Call placed via Africa's Talking sandbox" : "Satellite check ran (no alert)",
+            title: res.triggered
+              ? "Call placed via Africa's Talking sandbox"
+              : "Satellite check ran (no alert)",
             description: res.triggered
               ? "Open the AT simulator to answer the call."
               : "No alert was triggered — vegetation is healthy.",
@@ -36,9 +66,13 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
         },
         onError: (err: unknown) => {
           const message = err instanceof Error ? err.message : "Call failed";
-          toast({ title: "AT call failed", description: message, variant: "destructive" });
+          toast({
+            title: "AT call failed",
+            description: message,
+            variant: "destructive",
+          });
         },
-      }
+      },
     );
   };
 
@@ -71,7 +105,8 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
     const client = new BrowserVoiceClient({
       onStateChange: (state, message) => {
         setVoiceState(state);
-        if (state === "error" && message) setVoiceError(micErrorMessage(message) ?? message);
+        if (state === "error" && message)
+          setVoiceError(micErrorMessage(message) ?? message);
       },
       onTranscript: (entry) => setTranscript((prev) => [...prev, entry]),
       onLevel: (level) => setMicLevel(level),
@@ -87,7 +122,11 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
     } catch (err) {
       const raw = err instanceof Error ? err.message : "Failed to start";
       const message = micErrorMessage(raw) ?? raw;
-      toast({ title: "Could not start live call", description: message, variant: "destructive" });
+      toast({
+        title: "Could not start live call",
+        description: message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -104,8 +143,13 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
             <Phone className="w-5 h-5 text-amber-500" /> Operator call console
           </DialogTitle>
           <DialogDescription className="text-gray-400">
-            For the judge demo, use <span className="text-amber-300 font-medium">“Hear ArdaLink call you”</span> on the top bar — it opens the full incoming-call screen.
-            This console is for operators: in-page WebRTC, AT sandbox to a real Kenyan number, and shareable call links.
+            For the judge demo, use{" "}
+            <span className="text-amber-300 font-medium">
+              “Hear ArdaLink call you”
+            </span>{" "}
+            on the top bar — it opens the full incoming-call screen. This
+            console is for operators: in-page WebRTC, AT sandbox to a real
+            Kenyan number, and shareable call links.
           </DialogDescription>
           <div className="pt-2">
             <ShareCallLinkButton />
@@ -114,10 +158,18 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
 
         <Tabs defaultValue="browser" className="mt-2">
           <TabsList className="grid w-full grid-cols-2 bg-gray-900 border border-gray-800">
-            <TabsTrigger value="browser" data-testid="tab-browser-call" className="data-[state=active]:bg-amber-600/20 data-[state=active]:text-amber-300">
+            <TabsTrigger
+              value="browser"
+              data-testid="tab-browser-call"
+              className="data-[state=active]:bg-amber-600/20 data-[state=active]:text-amber-300"
+            >
               <Globe className="w-4 h-4 mr-2" /> Browser Live (WebRTC)
             </TabsTrigger>
-            <TabsTrigger value="sandbox" data-testid="tab-at-sandbox" className="data-[state=active]:bg-amber-600/20 data-[state=active]:text-amber-300">
+            <TabsTrigger
+              value="sandbox"
+              data-testid="tab-at-sandbox"
+              className="data-[state=active]:bg-amber-600/20 data-[state=active]:text-amber-300"
+            >
               <Radio className="w-4 h-4 mr-2" /> Africa's Talking Sandbox
             </TabsTrigger>
           </TabsList>
@@ -126,34 +178,51 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
           <TabsContent value="browser" className="mt-4 space-y-4">
             <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
               <div className="text-sm text-gray-400 mb-3">
-                Talk to ArdaLink right here in this dialog. Same Realtime model the herder hears on their 2G phone — your mic streams to Azure OpenAI and you hear the AI back. No phone, no SIM, no app.
+                Talk to ArdaLink right here in this dialog. Same Realtime model
+                the herder hears on their 2G phone — your mic streams to Azure
+                OpenAI and you hear the AI back. No phone, no SIM, no app.
               </div>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-3 h-3 rounded-full ${
-                  voiceState === "live" ? "bg-green-400 animate-pulse" :
-                  voiceState === "connecting" ? "bg-amber-400 animate-pulse" :
-                  voiceState === "error" ? "bg-red-500" : "bg-gray-600"
-                }`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    voiceState === "live"
+                      ? "bg-green-400 animate-pulse"
+                      : voiceState === "connecting"
+                        ? "bg-amber-400 animate-pulse"
+                        : voiceState === "error"
+                          ? "bg-red-500"
+                          : "bg-gray-600"
+                  }`}
+                />
                 <span className="text-xs uppercase tracking-wider text-gray-400">
-                  {voiceState === "live" ? "Live — speak naturally" :
-                   voiceState === "connecting" ? "Connecting to Azure Realtime…" :
-                   voiceState === "stopped" ? "Call ended" :
-                   voiceState === "error" ? `Error: ${voiceError ?? "unknown"}` :
-                   "Idle"}
+                  {voiceState === "live"
+                    ? "Live — speak naturally"
+                    : voiceState === "connecting"
+                      ? "Connecting to Azure Realtime…"
+                      : voiceState === "stopped"
+                        ? "Call ended"
+                        : voiceState === "error"
+                          ? `Error: ${voiceError ?? "unknown"}`
+                          : "Idle"}
                 </span>
                 {voiceState === "live" && (
                   <div className="ml-auto flex items-center gap-1.5">
                     <Mic className="w-3.5 h-3.5 text-amber-500" />
                     <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-amber-500 transition-all" style={{ width: `${Math.min(100, micLevel * 600)}%` }} />
+                      <div
+                        className="h-full bg-amber-500 transition-all"
+                        style={{ width: `${Math.min(100, micLevel * 600)}%` }}
+                      />
                     </div>
                   </div>
                 )}
               </div>
 
               <div className="flex gap-2">
-                {voiceState === "idle" || voiceState === "stopped" || voiceState === "error" ? (
+                {voiceState === "idle" ||
+                voiceState === "stopped" ||
+                voiceState === "error" ? (
                   <Button
                     onClick={handleStartBrowserCall}
                     className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
@@ -163,7 +232,8 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
                   </Button>
                 ) : voiceState === "connecting" ? (
                   <Button disabled className="flex-1 bg-amber-700 text-white">
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Connecting…
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />{" "}
+                    Connecting…
                   </Button>
                 ) : (
                   <Button
@@ -187,14 +257,23 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
 
             {(transcript.length > 0 || voiceState === "live") && (
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 max-h-64 overflow-y-auto">
-                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Live transcript</div>
+                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                  Live transcript
+                </div>
                 {transcript.length === 0 ? (
-                  <div className="text-sm text-gray-600 italic">Listening… speak when ready.</div>
+                  <div className="text-sm text-gray-600 italic">
+                    Listening… speak when ready.
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {transcript.map((t, i) => (
-                      <div key={i} className={`text-sm ${t.role === "user" ? "text-amber-200" : "text-green-200"}`}>
-                        <span className="font-semibold mr-2">{t.role === "user" ? "You:" : "ArdaLink:"}</span>
+                      <div
+                        key={i}
+                        className={`text-sm ${t.role === "user" ? "text-amber-200" : "text-green-200"}`}
+                      >
+                        <span className="font-semibold mr-2">
+                          {t.role === "user" ? "You:" : "ArdaLink:"}
+                        </span>
                         {t.text}
                       </div>
                     ))}
@@ -209,12 +288,22 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
           <TabsContent value="sandbox" className="mt-4 space-y-4">
             <div className="p-4 bg-gray-900 border border-gray-800 rounded-xl">
               <div className="text-sm text-gray-400 mb-3">
-                Place a real outbound call through Africa's Talking sandbox. Open the AT simulator at{" "}
-                <a href="https://simulator.africastalking.com" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline">simulator.africastalking.com</a>{" "}
+                Place a real outbound call through Africa's Talking sandbox.
+                Open the AT simulator at{" "}
+                <a
+                  href="https://simulator.africastalking.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-amber-400 hover:underline"
+                >
+                  simulator.africastalking.com
+                </a>{" "}
                 with the same number to answer it.
               </div>
 
-              <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block">Phone number</label>
+              <label className="text-xs text-gray-500 uppercase tracking-wider mb-1.5 block">
+                Phone number
+              </label>
               <Input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -230,15 +319,23 @@ export function CallModal({ open, onOpenChange }: { open: boolean; onOpenChange:
                 data-testid="btn-sandbox-call"
               >
                 {triggerCheck.isPending ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Running full pipeline…</>
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Running
+                    full pipeline…
+                  </>
                 ) : (
-                  <><Phone className="w-4 h-4 mr-2" /> Place sandbox call</>
+                  <>
+                    <Phone className="w-4 h-4 mr-2" /> Place sandbox call
+                  </>
                 )}
               </Button>
             </div>
 
             <div className="text-xs text-gray-500 leading-relaxed px-1">
-              This runs the full intelligence cycle: live Sentinel-2 fetch → Cosmos baseline → GPT-4o script → outbound call. The AI conducts a Swahili/English conversation, transcribes it, and saves it to PostgreSQL as ground truth.
+              This runs the full intelligence cycle: live Sentinel-2 fetch →
+              Cosmos baseline → GPT-4o script → outbound call. The AI conducts a
+              Swahili/English conversation, transcribes it, and saves it to
+              PostgreSQL as ground truth.
             </div>
           </TabsContent>
         </Tabs>

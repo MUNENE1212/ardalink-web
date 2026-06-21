@@ -40,7 +40,7 @@ export function getTenantContext(): TenantContext | null {
 export function tenantHeaders(): Record<string, string> {
   const ctx = getTenantContext();
   if (!ctx) return {};
-  return { 'X-Client-Tenant-ID': ctx.tenantId };
+  return { "X-Client-Tenant-ID": ctx.tenantId };
 }
 
 export function hasFlag(flag: string): boolean {

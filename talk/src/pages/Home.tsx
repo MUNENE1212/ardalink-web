@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { BrowserVoiceClient, type TranscriptEntry, type VoiceState } from "@/lib/browserVoice";
+import {
+  BrowserVoiceClient,
+  type TranscriptEntry,
+  type VoiceState,
+} from "@/lib/browserVoice";
 import { Ringback } from "@/lib/ringback";
 import ChatPanel from "@/components/ChatPanel";
 import EnvPanel from "@/components/EnvPanel";
@@ -111,7 +115,9 @@ export default function Home() {
     e.preventDefault();
     setErrorMsg("");
     if (!isValidPhone(phoneInput)) {
-      setErrorMsg("Tafadhali andika namba ya simu kamili. / Please enter a complete phone number.");
+      setErrorMsg(
+        "Tafadhali andika namba ya simu kamili. / Please enter a complete phone number.",
+      );
       return;
     }
     const normalized = normalizePhone(phoneInput);
@@ -186,7 +192,10 @@ export default function Home() {
             "ArdaLink ina shughuli nyingi sasa. Tafadhali jaribu tena baada ya dakika moja. / ArdaLink is busy right now. Please try again in a minute.",
           );
         } else {
-          setErrorMsg(mint.message ?? "Tatizo la kuanzisha simu. / Could not start the call.");
+          setErrorMsg(
+            mint.message ??
+              "Tatizo la kuanzisha simu. / Could not start the call.",
+          );
         }
         stopRingback();
         setStep("error");
@@ -264,7 +273,12 @@ export default function Home() {
   // ───── In-call full-screen view ─────
   if (step === "calling" || step === "ended") {
     const isLive = voiceState === "live";
-    const isConnecting = voiceState === "connecting" || (step === "calling" && !isLive && voiceState !== "stopped" && voiceState !== "error");
+    const isConnecting =
+      voiceState === "connecting" ||
+      (step === "calling" &&
+        !isLive &&
+        voiceState !== "stopped" &&
+        voiceState !== "error");
     const isEnded = step === "ended";
 
     return (
@@ -272,18 +286,28 @@ export default function Home() {
         {/* Status bar */}
         <div className="pt-8 pb-4 text-center">
           <p className="text-[11px] uppercase tracking-[0.2em] text-amber-300/80">
-            {isConnecting ? "Inaita · Calling" : isEnded ? "Imeisha · Ended" : "Umeunganishwa · Connected"}
+            {isConnecting
+              ? "Inaita · Calling"
+              : isEnded
+                ? "Imeisha · Ended"
+                : "Umeunganishwa · Connected"}
           </p>
           <h2 className="mt-1 text-2xl font-semibold">ArdaLink</h2>
-          <p className="text-xs text-stone-400 mt-0.5">Msaidizi wako wa malisho · Rangeland companion</p>
+          <p className="text-xs text-stone-400 mt-0.5">
+            Msaidizi wako wa malisho · Rangeland companion
+          </p>
           {isLive && (
-            <p className="mt-2 font-mono text-base text-emerald-300">{formatDuration(durationSec)}</p>
+            <p className="mt-2 font-mono text-base text-emerald-300">
+              {formatDuration(durationSec)}
+            </p>
           )}
           {isConnecting && (
             <p className="mt-2 text-xs text-stone-400">{statusMsg}</p>
           )}
           {isEnded && (
-            <p className="mt-2 text-xs text-stone-400">{statusMsg} · {formatDuration(durationSec)}</p>
+            <p className="mt-2 text-xs text-stone-400">
+              {statusMsg} · {formatDuration(durationSec)}
+            </p>
           )}
         </div>
 
@@ -292,9 +316,18 @@ export default function Home() {
           <div className="relative">
             {(isConnecting || isLive) && (
               <>
-                <span className="absolute inset-0 rounded-full bg-amber-500/20 animate-ping" style={{ animationDuration: "2s" }} />
-                <span className="absolute -inset-4 rounded-full bg-amber-500/10 animate-ping" style={{ animationDuration: "2.6s", animationDelay: "0.3s" }} />
-                <span className="absolute -inset-8 rounded-full bg-amber-500/5 animate-ping" style={{ animationDuration: "3.2s", animationDelay: "0.6s" }} />
+                <span
+                  className="absolute inset-0 rounded-full bg-amber-500/20 animate-ping"
+                  style={{ animationDuration: "2s" }}
+                />
+                <span
+                  className="absolute -inset-4 rounded-full bg-amber-500/10 animate-ping"
+                  style={{ animationDuration: "2.6s", animationDelay: "0.3s" }}
+                />
+                <span
+                  className="absolute -inset-8 rounded-full bg-amber-500/5 animate-ping"
+                  style={{ animationDuration: "3.2s", animationDelay: "0.6s" }}
+                />
               </>
             )}
             <div
@@ -323,7 +356,9 @@ export default function Home() {
               onClick={() => setShowTranscript((v) => !v)}
               className="w-full text-center text-[11px] text-stone-400 hover:text-stone-200 py-1"
             >
-              {showTranscript ? "Ficha maandishi · Hide transcript" : `Onyesha maandishi · Show transcript (${transcript.length})`}
+              {showTranscript
+                ? "Ficha maandishi · Hide transcript"
+                : `Onyesha maandishi · Show transcript (${transcript.length})`}
             </button>
             {showTranscript && (
               <div className="max-h-48 overflow-y-auto space-y-1.5 mt-2 bg-black/30 rounded-xl p-3 border border-white/5">
@@ -355,7 +390,9 @@ export default function Home() {
               >
                 Funga · Done
               </button>
-              <p className="text-[11px] text-stone-500">Asante kwa kuzungumza nasi · Thank you for talking with us</p>
+              <p className="text-[11px] text-stone-500">
+                Asante kwa kuzungumza nasi · Thank you for talking with us
+              </p>
             </div>
           ) : (
             <div className="flex items-center justify-center gap-8">
@@ -371,14 +408,32 @@ export default function Home() {
                 aria-label={muted ? "Unmute" : "Mute"}
               >
                 {muted ? (
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <line x1="2" y1="2" x2="22" y2="22" />
                     <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6" />
                     <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
                     <line x1="12" y1="19" x2="12" y2="23" />
                   </svg>
                 ) : (
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                     <line x1="12" y1="19" x2="12" y2="23" />
@@ -392,7 +447,17 @@ export default function Home() {
                 className="w-20 h-20 rounded-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white flex items-center justify-center shadow-xl shadow-red-900/50 transition-all hover:scale-105 active:scale-95"
                 aria-label="End call"
               >
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "rotate(135deg)" }}>
+                <svg
+                  width="34"
+                  height="34"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ transform: "rotate(135deg)" }}
+                >
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
               </button>
@@ -402,7 +467,16 @@ export default function Home() {
                 className="w-16 h-16 rounded-full flex items-center justify-center border-2 bg-white/10 text-white border-white/30"
                 aria-label="Speaker on"
               >
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
@@ -422,7 +496,9 @@ export default function Home() {
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-amber-100 text-amber-700 mb-3 text-2xl">
           🌾
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-stone-900">ArdaLink</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-stone-900">
+          ArdaLink
+        </h1>
         <p className="mt-1 text-sm text-stone-600">
           Sauti ya rangeland yako · The voice of your rangeland
         </p>
@@ -435,12 +511,12 @@ export default function Home() {
               Karibu! / Welcome!
             </h2>
             <p className="mt-2 text-sm text-stone-700 leading-relaxed">
-              Mimi ni ArdaLink — msaidizi wako wa malisho na hali ya hewa. Andika namba yako ya
-              simu ili tuanze kuzungumza.
+              Mimi ni ArdaLink — msaidizi wako wa malisho na hali ya hewa.
+              Andika namba yako ya simu ili tuanze kuzungumza.
             </p>
             <p className="mt-1 text-xs text-stone-500 leading-relaxed">
-              I'm ArdaLink — your rangeland & weather companion. Enter your phone number so we
-              can start talking.
+              I'm ArdaLink — your rangeland & weather companion. Enter your
+              phone number so we can start talking.
             </p>
 
             <form onSubmit={handleSavePhone} className="mt-5 space-y-4">
@@ -474,11 +550,12 @@ export default function Home() {
               </div>
 
               <div className="rounded-lg bg-stone-50 border border-stone-200 p-3 text-xs text-stone-700 leading-relaxed">
-                Kwa kubonyeza chini, unakubali sauti yako na majibu yako kuhifadhiwa ili
-                kusaidia jamii yako kupata onyo bora la ukame.
+                Kwa kubonyeza chini, unakubali sauti yako na majibu yako
+                kuhifadhiwa ili kusaidia jamii yako kupata onyo bora la ukame.
                 <span className="block mt-1.5 text-stone-500">
-                  By tapping below, you agree your voice and answers are saved to help your
-                  community get better drought warnings. You can stop the call anytime.
+                  By tapping below, you agree your voice and answers are saved
+                  to help your community get better drought warnings. You can
+                  stop the call anytime.
                 </span>
               </div>
 
@@ -539,10 +616,12 @@ export default function Home() {
             {readyTab === "call" && (
               <section className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 text-center">
                 <p className="text-base text-stone-800 leading-relaxed">
-                  Bonyeza ili kuzungumza na ArdaLink kuhusu malisho, maji, au mifugo yako.
+                  Bonyeza ili kuzungumza na ArdaLink kuhusu malisho, maji, au
+                  mifugo yako.
                 </p>
                 <p className="mt-1 text-xs text-stone-500">
-                  Tap below to speak with ArdaLink about pasture, water, or your livestock.
+                  Tap below to speak with ArdaLink about pasture, water, or your
+                  livestock.
                 </p>
 
                 {errorMsg && (
@@ -557,12 +636,25 @@ export default function Home() {
                   className="mt-8 mx-auto w-28 h-28 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-stone-300 text-white shadow-xl shadow-emerald-900/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
                   aria-label="Call ArdaLink"
                 >
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="44"
+                    height="44"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
                 </button>
-                <p className="mt-3 text-base font-semibold text-stone-900">Piga simu · Tap to call</p>
-                <p className="mt-1 text-xs text-stone-500">Zungumza na ArdaLink</p>
+                <p className="mt-3 text-base font-semibold text-stone-900">
+                  Piga simu · Tap to call
+                </p>
+                <p className="mt-1 text-xs text-stone-500">
+                  Zungumza na ArdaLink
+                </p>
 
                 <button
                   onClick={handleChangePhone}

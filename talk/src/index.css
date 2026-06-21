@@ -7,7 +7,11 @@
     height: 100%;
   }
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     background: linear-gradient(180deg, #fef3c7 0%, #fffbeb 30%, #fafaf9 100%);
     color: #1c1917;

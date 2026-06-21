@@ -1,24 +1,63 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  MapPin, Satellite, Cloud, MessageSquare, Users, Activity,
-  TrendingDown, Droplets, Thermometer, Wind, AlertTriangle,
-  ChevronRight, Send, Radio, Plus, Trash2,
-  RefreshCw, Loader2, Menu, ClipboardList, Heart
+  MapPin,
+  Satellite,
+  Cloud,
+  MessageSquare,
+  Users,
+  Activity,
+  TrendingDown,
+  Droplets,
+  Thermometer,
+  Wind,
+  AlertTriangle,
+  ChevronRight,
+  Send,
+  Radio,
+  Plus,
+  Trash2,
+  RefreshCw,
+  Loader2,
+  Menu,
+  ClipboardList,
+  Heart,
 } from "lucide-react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer,
-  CartesianGrid, Cell, Legend, Label, ReferenceLine
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as RTooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Label,
+  ReferenceLine,
 } from "recharts";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { CostRailsCard } from "@/components/CostRailsCard";
-import { 
-  useGetStatus, useGetForecast, useListPastoralists, 
-  useCreatePastoralist, useDeletePastoralist, useChatWithLand,
+import {
+  useGetStatus,
+  useGetForecast,
+  useListPastoralists,
+  useCreatePastoralist,
+  useDeletePastoralist,
+  useChatWithLand,
   useTriggerCheck,
-  useListGroundTruthRecent, useGetGroundTruthSummary,
+  useListGroundTruthRecent,
+  useGetGroundTruthSummary,
   getStatus,
-  getGetStatusQueryKey, getListPastoralistsQueryKey, getGetForecastQueryKey,
-  getListGroundTruthRecentQueryKey, getGetGroundTruthSummaryQueryKey
+  getGetStatusQueryKey,
+  getListPastoralistsQueryKey,
+  getGetForecastQueryKey,
+  getListGroundTruthRecentQueryKey,
+  getGetGroundTruthSummaryQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -26,11 +65,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CallModal } from "@/components/CallModal";
@@ -55,15 +114,29 @@ function riskBadge(level: string) {
   return map[level] ?? "bg-gray-800 text-gray-300 border-gray-600";
 }
 
-function MetricCard({ icon, label, value, sub, accent = "text-amber-400" }: {
-  icon: React.ReactNode; label: string; value: string | React.ReactNode; sub?: string; accent?: string;
+function MetricCard({
+  icon,
+  label,
+  value,
+  sub,
+  accent = "text-amber-400",
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | React.ReactNode;
+  sub?: string;
+  accent?: string;
 }) {
   return (
     <div className="bg-gray-900/80 border border-gray-800 rounded-xl p-3 flex items-start gap-3">
       <div className="text-gray-500 mt-0.5 shrink-0">{icon}</div>
       <div className="min-w-0">
         <div className="text-xs text-gray-500 mb-0.5">{label}</div>
-        <div className={`text-base font-bold font-mono ${accent} leading-tight`}>{value}</div>
+        <div
+          className={`text-base font-bold font-mono ${accent} leading-tight`}
+        >
+          {value}
+        </div>
         {sub && <div className="text-xs text-gray-600 mt-0.5">{sub}</div>}
       </div>
     </div>
@@ -72,12 +145,12 @@ function MetricCard({ icon, label, value, sub, accent = "text-amber-400" }: {
 
 // --- Legacy inline SVG map (replaced by WardMapLive). Kept to preserve git history; not referenced. ---
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function _UnusedWardMap({ 
-  quadrants, 
-  worstQuadrant 
-}: { 
-  quadrants: { NW: number, NE: number, SW: number, SE: number }, 
-  worstQuadrant: string 
+function _UnusedWardMap({
+  quadrants,
+  worstQuadrant,
+}: {
+  quadrants: { NW: number; NE: number; SW: number; SE: number };
+  worstQuadrant: string;
 }) {
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -90,28 +163,68 @@ function _UnusedWardMap({
 
   return (
     <div className="relative w-full h-full flex items-center justify-center min-h-[280px] sm:min-h-[400px]">
-      <svg viewBox="0 0 400 380" className="w-full max-w-[500px] h-full drop-shadow-2xl">
+      <svg
+        viewBox="0 0 400 380"
+        className="w-full max-w-[500px] h-full drop-shadow-2xl"
+      >
         <defs>
           <radialGradient id="terrain" cx="50%" cy="50%" r="60%">
             <stop offset="0%" stopColor="#1a2e1a" />
             <stop offset="100%" stopColor="#0a1a0a" />
           </radialGradient>
-          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1f2d1f" strokeWidth="0.5" />
+          <pattern
+            id="grid"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 20 0 L 0 0 0 20"
+              fill="none"
+              stroke="#1f2d1f"
+              strokeWidth="0.5"
+            />
           </pattern>
         </defs>
-        <rect x="0" y="0" width="400" height="380" fill="url(#terrain)" rx="8" />
-        <rect x="0" y="0" width="400" height="380" fill="url(#grid)" rx="8" opacity="0.4" />
+        <rect
+          x="0"
+          y="0"
+          width="400"
+          height="380"
+          fill="url(#terrain)"
+          rx="8"
+        />
+        <rect
+          x="0"
+          y="0"
+          width="400"
+          height="380"
+          fill="url(#grid)"
+          rx="8"
+          opacity="0.4"
+        />
 
-        <rect x="30" y="30" width="340" height="320" fill="none" stroke="#374151" strokeWidth="1" strokeDasharray="4,4" rx="4" />
+        <rect
+          x="30"
+          y="30"
+          width="340"
+          height="320"
+          fill="none"
+          stroke="#374151"
+          strokeWidth="1"
+          strokeDasharray="4,4"
+          rx="4"
+        />
 
         {/* Quadrants */}
-        {([
-          { id: "NW", x: 30, y: 30, tx: 115, ty: 95 },
-          { id: "NE", x: 200, y: 30, tx: 285, ty: 95 },
-          { id: "SW", x: 30, y: 190, tx: 115, ty: 257 },
-          { id: "SE", x: 200, y: 190, tx: 285, ty: 257 }
-        ] as const).map(q => {
+        {(
+          [
+            { id: "NW", x: 30, y: 30, tx: 115, ty: 95 },
+            { id: "NE", x: 200, y: 30, tx: 285, ty: 95 },
+            { id: "SW", x: 30, y: 190, tx: 115, ty: 257 },
+            { id: "SE", x: 200, y: 190, tx: 285, ty: 257 },
+          ] as const
+        ).map((q) => {
           const val = quadrants[q.id as keyof typeof quadrants] || 0;
           const c = stressColor(val);
           const isHov = hovered === q.id;
@@ -119,40 +232,151 @@ function _UnusedWardMap({
 
           return (
             <g key={q.id}>
-              <rect x={q.x} y={q.y} width="170" height="160"
-                fill={c.fill} fillOpacity={isHov ? 0.9 : 0.7}
-                stroke={c.stroke} strokeWidth={isWorst ? 2.5 : 1.5}
+              <rect
+                x={q.x}
+                y={q.y}
+                width="170"
+                height="160"
+                fill={c.fill}
+                fillOpacity={isHov ? 0.9 : 0.7}
+                stroke={c.stroke}
+                strokeWidth={isWorst ? 2.5 : 1.5}
                 className="cursor-pointer transition-all duration-200"
-                onMouseEnter={() => setHovered(q.id)} onMouseLeave={() => setHovered(null)}
+                onMouseEnter={() => setHovered(q.id)}
+                onMouseLeave={() => setHovered(null)}
               />
-              {isWorst && <rect x={q.x} y={q.y} width="170" height="160" fill="none" stroke="#ef4444" strokeWidth="1" strokeDasharray="3,2" />}
-              <text x={q.tx} y={q.ty} textAnchor="middle" fill={c.text} fontSize="11" fontWeight="600">{q.id} {isWorst && "⚠"}</text>
-              <text x={q.tx} y={q.ty + 17} textAnchor="middle" fill={c.text} fontSize="9" opacity="0.9">{val.toFixed(1)}% stressed</text>
-              <text x={q.tx} y={q.ty + 32} textAnchor="middle" fill={c.text} fontSize="9" opacity="0.7">{getLabel(val)}</text>
+              {isWorst && (
+                <rect
+                  x={q.x}
+                  y={q.y}
+                  width="170"
+                  height="160"
+                  fill="none"
+                  stroke="#ef4444"
+                  strokeWidth="1"
+                  strokeDasharray="3,2"
+                />
+              )}
+              <text
+                x={q.tx}
+                y={q.ty}
+                textAnchor="middle"
+                fill={c.text}
+                fontSize="11"
+                fontWeight="600"
+              >
+                {q.id} {isWorst && "⚠"}
+              </text>
+              <text
+                x={q.tx}
+                y={q.ty + 17}
+                textAnchor="middle"
+                fill={c.text}
+                fontSize="9"
+                opacity="0.9"
+              >
+                {val.toFixed(1)}% stressed
+              </text>
+              <text
+                x={q.tx}
+                y={q.ty + 32}
+                textAnchor="middle"
+                fill={c.text}
+                fontSize="9"
+                opacity="0.7"
+              >
+                {getLabel(val)}
+              </text>
             </g>
           );
         })}
 
-        <line x1="200" y1="30" x2="200" y2="350" stroke="#374151" strokeWidth="1" />
-        <line x1="30" y1="190" x2="370" y2="190" stroke="#374151" strokeWidth="1" />
+        <line
+          x1="200"
+          y1="30"
+          x2="200"
+          y2="350"
+          stroke="#374151"
+          strokeWidth="1"
+        />
+        <line
+          x1="30"
+          y1="190"
+          x2="370"
+          y2="190"
+          stroke="#374151"
+          strokeWidth="1"
+        />
 
-        <circle cx="200" cy="190" r="6" fill="#f59e0b" stroke="#fbbf24" strokeWidth="1.5" />
-        <circle cx="200" cy="190" r="12" fill="none" stroke="#f59e0b" strokeWidth="1" opacity="0.4" />
+        <circle
+          cx="200"
+          cy="190"
+          r="6"
+          fill="#f59e0b"
+          stroke="#fbbf24"
+          strokeWidth="1.5"
+        />
+        <circle
+          cx="200"
+          cy="190"
+          r="12"
+          fill="none"
+          stroke="#f59e0b"
+          strokeWidth="1"
+          opacity="0.4"
+        />
 
         <g opacity="0.85">
-          <circle cx="90" cy="80" r="4" fill="#38bdf8" stroke="#7dd3fc" strokeWidth="1" />
-          <circle cx="310" cy="65" r="4" fill="#38bdf8" stroke="#7dd3fc" strokeWidth="1" />
-          <circle cx="70" cy="280" r="4" fill="#38bdf8" stroke="#7dd3fc" strokeWidth="1" />
-          <circle cx="340" cy="310" r="3" fill="#94a3b8" stroke="#cbd5e1" strokeWidth="1" />
+          <circle
+            cx="90"
+            cy="80"
+            r="4"
+            fill="#38bdf8"
+            stroke="#7dd3fc"
+            strokeWidth="1"
+          />
+          <circle
+            cx="310"
+            cy="65"
+            r="4"
+            fill="#38bdf8"
+            stroke="#7dd3fc"
+            strokeWidth="1"
+          />
+          <circle
+            cx="70"
+            cy="280"
+            r="4"
+            fill="#38bdf8"
+            stroke="#7dd3fc"
+            strokeWidth="1"
+          />
+          <circle
+            cx="340"
+            cy="310"
+            r="3"
+            fill="#94a3b8"
+            stroke="#cbd5e1"
+            strokeWidth="1"
+          />
         </g>
 
-        <text x="200" y="370" textAnchor="middle" fill="#4b5563" fontSize="8">Bula Pesa Ward · Isiolo, Kenya · 0.355°N 37.583°E</text>
+        <text x="200" y="370" textAnchor="middle" fill="#4b5563" fontSize="8">
+          Bula Pesa Ward · Isiolo, Kenya · 0.355°N 37.583°E
+        </text>
 
         <g transform="translate(30, 358)">
-          {[["#22c55e","<25%"],["#eab308","25-40%"],["#f97316","40-55%"],["#ef4444",">55%"]].map(([color, label], i) => (
+          {[
+            ["#22c55e", "<25%"],
+            ["#eab308", "25-40%"],
+            ["#f97316", "40-55%"],
+            ["#ef4444", ">55%"],
+          ].map(([color, label], i) => (
             <g key={i} transform={`translate(${i * 78}, 0)`}>
               <rect width="10" height="10" fill={color} opacity="0.7" rx="2" />
-              <text x="13" y="9" fill="#6b7280" fontSize="7">{label}</text>
+              <text x="13" y="9" fill="#6b7280" fontSize="7">
+                {label}
+              </text>
             </g>
           ))}
         </g>
@@ -179,11 +403,19 @@ const QUADRANT_LABEL: Record<string, string> = {
 
 function GroundTruthSection() {
   const summaryQ = useGetGroundTruthSummary({
-    query: { refetchInterval: 60_000, queryKey: getGetGroundTruthSummaryQueryKey() },
+    query: {
+      refetchInterval: 60_000,
+      queryKey: getGetGroundTruthSummaryQueryKey(),
+    },
   });
   const recentQ = useListGroundTruthRecent(
     { limit: 20 },
-    { query: { refetchInterval: 60_000, queryKey: getListGroundTruthRecentQueryKey({ limit: 20 }) } },
+    {
+      query: {
+        refetchInterval: 60_000,
+        queryKey: getListGroundTruthRecentQueryKey({ limit: 20 }),
+      },
+    },
   );
 
   const summary = summaryQ.data;
@@ -213,16 +445,30 @@ function GroundTruthSection() {
   }
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 md:overflow-y-auto" data-testid="section-ground-truth">
+    <div
+      className="p-4 sm:p-6 space-y-6 md:overflow-y-auto"
+      data-testid="section-ground-truth"
+    >
       {/* KPI strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KpiCard label="Total reports" value={summary?.totalReports ?? 0} icon={<ClipboardList className="w-4 h-4" />} />
-        <KpiCard label="Last 7 days" value={summary?.reportsLast7Days ?? 0} icon={<Activity className="w-4 h-4" />} accent="text-amber-400" />
+        <KpiCard
+          label="Total reports"
+          value={summary?.totalReports ?? 0}
+          icon={<ClipboardList className="w-4 h-4" />}
+        />
+        <KpiCard
+          label="Last 7 days"
+          value={summary?.reportsLast7Days ?? 0}
+          icon={<Activity className="w-4 h-4" />}
+          accent="text-amber-400"
+        />
         <KpiCard
           label="Avg completeness"
-          value={summary?.averageCompletenessPercent != null
-            ? `${Math.round(summary.averageCompletenessPercent)}%`
-            : "—"}
+          value={
+            summary?.averageCompletenessPercent != null
+              ? `${Math.round(summary.averageCompletenessPercent)}%`
+              : "—"
+          }
           icon={<Heart className="w-4 h-4" />}
           accent="text-emerald-400"
         />
@@ -230,7 +476,11 @@ function GroundTruthSection() {
           label="BCS follow-ups"
           value={summary?.bcsFollowupCount ?? 0}
           icon={<AlertTriangle className="w-4 h-4" />}
-          accent={(summary?.bcsFollowupCount ?? 0) > 0 ? "text-orange-400" : "text-gray-300"}
+          accent={
+            (summary?.bcsFollowupCount ?? 0) > 0
+              ? "text-orange-400"
+              : "text-gray-300"
+          }
         />
       </div>
 
@@ -243,9 +493,13 @@ function GroundTruthSection() {
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-red-400" />
             Active stress alerts
-            <span className="text-xs text-gray-500 font-normal">· last 14 days</span>
+            <span className="text-xs text-gray-500 font-normal">
+              · last 14 days
+            </span>
           </h3>
-          <span className="text-xs text-gray-500">{summary?.alerts.length ?? 0} active</span>
+          <span className="text-xs text-gray-500">
+            {summary?.alerts.length ?? 0} active
+          </span>
         </div>
         {summary && summary.alerts.length > 0 ? (
           <div className="space-y-2" data-testid="alerts-list">
@@ -285,30 +539,79 @@ function GroundTruthSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
-            <Heart className="w-4 h-4 text-emerald-400" /> Average Body Condition Score by area
+            <Heart className="w-4 h-4 text-emerald-400" /> Average Body
+            Condition Score by area
           </h3>
           <p className="text-xs text-gray-500 mb-3">
-            ILRI/FAO Tropical Scale · <span className="text-red-400">1 emaciated</span> →{" "}
-            <span className="text-green-400">5 excellent</span>. Red bars = animals in crisis.
+            ILRI/FAO Tropical Scale ·{" "}
+            <span className="text-red-400">1 emaciated</span> →{" "}
+            <span className="text-green-400">5 excellent</span>. Red bars =
+            animals in crisis.
           </p>
           {bcsChartData.some((d) => d.bcs != null) ? (
             <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={bcsChartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+              <BarChart
+                data={bcsChartData}
+                margin={{ top: 5, right: 10, bottom: 20, left: 10 }}
+              >
                 <CartesianGrid stroke="#1f2937" strokeDasharray="3 3" />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fontSize: 11 }}>
-                  <Label value="Area of Bula Pesa Ward" offset={-10} position="insideBottom" fill="#6b7280" fontSize={11} />
+                  <Label
+                    value="Area of Bula Pesa Ward"
+                    offset={-10}
+                    position="insideBottom"
+                    fill="#6b7280"
+                    fontSize={11}
+                  />
                 </XAxis>
-                <YAxis domain={[0, 5]} stroke="#6b7280" tick={{ fontSize: 11 }} ticks={[0, 1, 2, 3, 4, 5]}>
-                  <Label value="BCS (1–5)" angle={-90} position="insideLeft" fill="#6b7280" fontSize={11} style={{ textAnchor: "middle" }} />
+                <YAxis
+                  domain={[0, 5]}
+                  stroke="#6b7280"
+                  tick={{ fontSize: 11 }}
+                  ticks={[0, 1, 2, 3, 4, 5]}
+                >
+                  <Label
+                    value="BCS (1–5)"
+                    angle={-90}
+                    position="insideLeft"
+                    fill="#6b7280"
+                    fontSize={11}
+                    style={{ textAnchor: "middle" }}
+                  />
                 </YAxis>
-                <ReferenceLine y={2.5} yAxisId={0} stroke="#ef4444" strokeDasharray="4 4" label={{ value: "Crisis line", fill: "#f87171", fontSize: 10, position: "insideTopRight" }} />
-                <RTooltip
-                  contentStyle={{ background: "#111827", border: "1px solid #374151", borderRadius: 8, fontSize: 12 }}
-                  formatter={(value: unknown, _name: unknown, p: { payload?: { samples?: number } }) =>
-                    [`${typeof value === "number" ? value.toFixed(2) : value} (${p.payload?.samples ?? 0} reports)`, "BCS avg"]
-                  }
+                <ReferenceLine
+                  y={2.5}
+                  yAxisId={0}
+                  stroke="#ef4444"
+                  strokeDasharray="4 4"
+                  label={{
+                    value: "Crisis line",
+                    fill: "#f87171",
+                    fontSize: 10,
+                    position: "insideTopRight",
+                  }}
                 />
-                <Bar dataKey="bcs" radius={[6, 6, 0, 0]} name="Body Condition Score">
+                <RTooltip
+                  contentStyle={{
+                    background: "#111827",
+                    border: "1px solid #374151",
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                  formatter={(
+                    value: unknown,
+                    _name: unknown,
+                    p: { payload?: { samples?: number } },
+                  ) => [
+                    `${typeof value === "number" ? value.toFixed(2) : value} (${p.payload?.samples ?? 0} reports)`,
+                    "BCS avg",
+                  ]}
+                />
+                <Bar
+                  dataKey="bcs"
+                  radius={[6, 6, 0, 0]}
+                  name="Body Condition Score"
+                >
                   {bcsChartData.map((d, i) => (
                     <Cell key={i} fill={bcsBarColor(d.bcs)} />
                   ))}
@@ -317,44 +620,110 @@ function GroundTruthSection() {
             </ResponsiveContainer>
           ) : (
             <div className="text-sm text-gray-500 italic py-10 text-center">
-              No BCS samples yet. Once herders answer the body-condition question on calls, this chart will populate.
+              No BCS samples yet. Once herders answer the body-condition
+              question on calls, this chart will populate.
             </div>
           )}
         </div>
 
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
-            <TrendingDown className="w-4 h-4 text-amber-400" /> Satellite vs. herder ground truth
+            <TrendingDown className="w-4 h-4 text-amber-400" /> Satellite vs.
+            herder ground truth
           </h3>
           <p className="text-xs text-gray-500 mb-3">
-            <span className="text-emerald-400">Green</span> = animals on the ground (BCS 1–5, higher is better) ·{" "}
-            <span className="text-amber-400">Orange</span> = pasture from space (NDVI Δ%, more negative = drier than normal).
-            Green low + orange deep negative → that area needs help now.
+            <span className="text-emerald-400">Green</span> = animals on the
+            ground (BCS 1–5, higher is better) ·{" "}
+            <span className="text-amber-400">Orange</span> = pasture from space
+            (NDVI Δ%, more negative = drier than normal). Green low + orange
+            deep negative → that area needs help now.
           </p>
           {correlationData.some((d) => d.samples > 0) ? (
             <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={correlationData} margin={{ top: 5, right: 15, bottom: 30, left: 15 }}>
+              <BarChart
+                data={correlationData}
+                margin={{ top: 5, right: 15, bottom: 30, left: 15 }}
+              >
                 <CartesianGrid stroke="#1f2937" strokeDasharray="3 3" />
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fontSize: 11 }}>
-                  <Label value="Area of Bula Pesa Ward" offset={-10} position="insideBottom" fill="#6b7280" fontSize={11} />
+                  <Label
+                    value="Area of Bula Pesa Ward"
+                    offset={-10}
+                    position="insideBottom"
+                    fill="#6b7280"
+                    fontSize={11}
+                  />
                 </XAxis>
-                <YAxis yAxisId="left" stroke="#22c55e" tick={{ fontSize: 11 }} domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}>
-                  <Label value="BCS (herder, 1–5)" angle={-90} position="insideLeft" fill="#22c55e" fontSize={11} style={{ textAnchor: "middle" }} />
+                <YAxis
+                  yAxisId="left"
+                  stroke="#22c55e"
+                  tick={{ fontSize: 11 }}
+                  domain={[0, 5]}
+                  ticks={[0, 1, 2, 3, 4, 5]}
+                >
+                  <Label
+                    value="BCS (herder, 1–5)"
+                    angle={-90}
+                    position="insideLeft"
+                    fill="#22c55e"
+                    fontSize={11}
+                    style={{ textAnchor: "middle" }}
+                  />
                 </YAxis>
-                <YAxis yAxisId="right" orientation="right" stroke="#f59e0b" tick={{ fontSize: 11 }}>
-                  <Label value="NDVI Δ% (satellite)" angle={90} position="insideRight" fill="#f59e0b" fontSize={11} style={{ textAnchor: "middle" }} />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  stroke="#f59e0b"
+                  tick={{ fontSize: 11 }}
+                >
+                  <Label
+                    value="NDVI Δ% (satellite)"
+                    angle={90}
+                    position="insideRight"
+                    fill="#f59e0b"
+                    fontSize={11}
+                    style={{ textAnchor: "middle" }}
+                  />
                 </YAxis>
-                <ReferenceLine yAxisId="right" y={0} stroke="#4b5563" strokeDasharray="2 2" />
+                <ReferenceLine
+                  yAxisId="right"
+                  y={0}
+                  stroke="#4b5563"
+                  strokeDasharray="2 2"
+                />
                 <RTooltip
-                  contentStyle={{ background: "#111827", border: "1px solid #374151", borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{
+                    background: "#111827",
+                    border: "1px solid #374151",
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
                   formatter={(value: unknown, name: unknown) => {
-                    const v = typeof value === "number" ? value.toFixed(2) : String(value);
+                    const v =
+                      typeof value === "number"
+                        ? value.toFixed(2)
+                        : String(value);
                     return [v, String(name)];
                   }}
                 />
-                <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} iconType="circle" />
-                <Bar yAxisId="left" dataKey="bcs" fill="#22c55e" radius={[4, 4, 0, 0]} name="Herder BCS (1–5)" />
-                <Bar yAxisId="right" dataKey="ndvi" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Satellite NDVI Δ%" />
+                <Legend
+                  wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
+                  iconType="circle"
+                />
+                <Bar
+                  yAxisId="left"
+                  dataKey="bcs"
+                  fill="#22c55e"
+                  radius={[4, 4, 0, 0]}
+                  name="Herder BCS (1–5)"
+                />
+                <Bar
+                  yAxisId="right"
+                  dataKey="ndvi"
+                  fill="#f59e0b"
+                  radius={[4, 4, 0, 0]}
+                  name="Satellite NDVI Δ%"
+                />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -368,12 +737,15 @@ function GroundTruthSection() {
       {/* Recent indicator table */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
         <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-white">Recent ground-truth reports</h3>
+          <h3 className="text-sm font-semibold text-white">
+            Recent ground-truth reports
+          </h3>
           <span className="text-xs text-gray-500">{reports.length} shown</span>
         </div>
         {reports.length === 0 ? (
           <div className="text-sm text-gray-500 italic px-4 py-10 text-center">
-            No reports yet. Trigger a satellite check and accept the demo call to populate.
+            No reports yet. Trigger a satellite check and accept the demo call
+            to populate.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -388,42 +760,66 @@ function GroundTruthSection() {
                   <TableHead className="text-gray-400">Milk</TableHead>
                   <TableHead className="text-gray-400">Water point</TableHead>
                   <TableHead className="text-gray-400">Trust</TableHead>
-                  <TableHead className="text-gray-400 text-right">Filled</TableHead>
+                  <TableHead className="text-gray-400 text-right">
+                    Filled
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {reports.map((r) => (
-                  <TableRow key={r.id} className="border-gray-800" data-testid={`row-report-${r.id}`}>
+                  <TableRow
+                    key={r.id}
+                    className="border-gray-800"
+                    data-testid={`row-report-${r.id}`}
+                  >
                     <TableCell className="text-xs text-gray-400 whitespace-nowrap">
                       {new Date(r.createdAt).toLocaleDateString()}
                       <div className="text-[10px] text-gray-600">
-                        {new Date(r.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(r.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs text-gray-300">
                       {r.reportedLocation ?? "—"}
-                      <div className="text-[10px] text-gray-600">{r.reportedQuadrant ?? "unmapped"}</div>
+                      <div className="text-[10px] text-gray-600">
+                        {r.reportedQuadrant ?? "unmapped"}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {r.bcsScore != null ? (
                         <span
                           className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium"
-                          style={{ background: `${bcsBarColor(r.bcsScore)}22`, color: bcsBarColor(r.bcsScore) }}
+                          style={{
+                            background: `${bcsBarColor(r.bcsScore)}22`,
+                            color: bcsBarColor(r.bcsScore),
+                          }}
                         >
                           {r.bcsScore.toFixed(1)}
-                          {r.bcsFlagFollowup ? <AlertTriangle className="w-3 h-3" /> : null}
+                          {r.bcsFlagFollowup ? (
+                            <AlertTriangle className="w-3 h-3" />
+                          ) : null}
                         </span>
                       ) : (
                         <span className="text-xs text-gray-600">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-xs text-gray-300">{r.offtakeRate ?? "—"}</TableCell>
-                    <TableCell className="text-xs text-gray-300">{r.mortalityRate ?? "—"}</TableCell>
-                    <TableCell className="text-xs text-gray-300">{r.milkProduction ?? "—"}</TableCell>
+                    <TableCell className="text-xs text-gray-300">
+                      {r.offtakeRate ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-xs text-gray-300">
+                      {r.mortalityRate ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-xs text-gray-300">
+                      {r.milkProduction ?? "—"}
+                    </TableCell>
                     <TableCell className="text-xs text-gray-300">
                       {r.waterPointName ?? "—"}
                       {r.waterPointStatus ? (
-                        <div className="text-[10px] text-gray-500">{r.waterPointStatus}</div>
+                        <div className="text-[10px] text-gray-500">
+                          {r.waterPointStatus}
+                        </div>
                       ) : null}
                     </TableCell>
                     <TableCell>
@@ -460,30 +856,43 @@ function GroundTruthSection() {
       </div>
 
       <p className="text-[10px] text-gray-600 text-center pt-2">
-        Indicators follow ILRI/FAO Tropical BCS, FEWS NET Livestock, LEGS Emergency Guidelines, FAO Animal Welfare,
-        and WFP Coping Strategy Index. All fields nullable — no value is ever invented.
+        Indicators follow ILRI/FAO Tropical BCS, FEWS NET Livestock, LEGS
+        Emergency Guidelines, FAO Animal Welfare, and WFP Coping Strategy Index.
+        All fields nullable — no value is ever invented.
       </p>
     </div>
   );
 }
 
 function KpiCard({
-  label, value, icon, accent,
-}: { label: string; value: string | number; icon: React.ReactNode; accent?: string }) {
+  label,
+  value,
+  icon,
+  accent,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  accent?: string;
+}) {
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-3">
       <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
         {icon}
         {label}
       </div>
-      <div className={`text-2xl font-semibold ${accent ?? "text-white"}`}>{value}</div>
+      <div className={`text-2xl font-semibold ${accent ?? "text-white"}`}>
+        {value}
+      </div>
     </div>
   );
 }
 
 // --- Main Dashboard ---
 export default function Dashboard() {
-  const [tab, setTab] = useState<"map" | "pastoralists" | "groundtruth" | "chat">("map");
+  const [tab, setTab] = useState<
+    "map" | "pastoralists" | "groundtruth" | "chat"
+  >("map");
   const [navOpen, setNavOpen] = useState(false);
   const [callOpen, setCallOpen] = useState(false);
   const [mintingCall, setMintingCall] = useState(false);
@@ -491,7 +900,9 @@ export default function Dashboard() {
   // new tab INSTANTLY — no network roundtrip on click, no about:blank
   // splash. Refreshed in the background after each use. Tokens are
   // single-use with a 15-minute TTL, so we re-mint well before expiry.
-  const prefetchedToken = useRef<{ token: string; expiresAt: number } | null>(null);
+  const prefetchedToken = useRef<{ token: string; expiresAt: number } | null>(
+    null,
+  );
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -502,8 +913,13 @@ export default function Dashboard() {
       const res = await fetch("/api/call-tokens", { method: "POST" });
       if (!res.ok) return;
       const data = (await res.json()) as { token: string; expiresAt: number };
-      prefetchedToken.current = { token: data.token, expiresAt: data.expiresAt };
-    } catch { /* offline / blocked — fallback path handles it */ }
+      prefetchedToken.current = {
+        token: data.token,
+        expiresAt: data.expiresAt,
+      };
+    } catch {
+      /* offline / blocked — fallback path handles it */
+    }
   };
 
   // Pre-mint one on mount so the first click is fast.
@@ -537,19 +953,21 @@ export default function Dashboard() {
     }
     try {
       win.document.write(
-        '<!doctype html><html><head><title>ArdaLink — dialling…</title>' +
-        '<style>html,body{margin:0;height:100%;background:#0a0a0a;color:#fbbf24;' +
-        'font-family:system-ui,sans-serif;display:flex;align-items:center;' +
-        'justify-content:center;font-size:18px;letter-spacing:0.02em}' +
-        '.dot{display:inline-block;width:8px;height:8px;border-radius:50%;' +
-        'background:#fbbf24;margin:0 4px;animation:p 1.2s infinite ease-in-out}' +
-        '.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}' +
-        '@keyframes p{0%,80%,100%{opacity:.2}40%{opacity:1}}</style>' +
-        '</head><body><div>📡 Dialling your phone<span class="dot"></span>' +
-        '<span class="dot"></span><span class="dot"></span></div></body></html>'
+        "<!doctype html><html><head><title>ArdaLink — dialling…</title>" +
+          "<style>html,body{margin:0;height:100%;background:#0a0a0a;color:#fbbf24;" +
+          "font-family:system-ui,sans-serif;display:flex;align-items:center;" +
+          "justify-content:center;font-size:18px;letter-spacing:0.02em}" +
+          ".dot{display:inline-block;width:8px;height:8px;border-radius:50%;" +
+          "background:#fbbf24;margin:0 4px;animation:p 1.2s infinite ease-in-out}" +
+          ".dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}" +
+          "@keyframes p{0%,80%,100%{opacity:.2}40%{opacity:1}}</style>" +
+          '</head><body><div>📡 Dialling your phone<span class="dot"></span>' +
+          '<span class="dot"></span><span class="dot"></span></div></body></html>',
       );
       win.document.close();
-    } catch { /* cross-origin write may fail — harmless */ }
+    } catch {
+      /* cross-origin write may fail — harmless */
+    }
     setMintingCall(true);
     // Minimum splash time so the "📡 Dialling…" animation is always
     // perceptible — even on the fast path where the token is already in
@@ -585,30 +1003,46 @@ export default function Dashboard() {
         // If the win.location setter is blocked (rare cross-origin edge case),
         // fall back to opening a fresh tab on the same gesture chain.
         window.open(url, "_blank");
-        try { win.close(); } catch { /* ignore */ }
+        try {
+          win.close();
+        } catch {
+          /* ignore */
+        }
       }
       toast({
         title: "Your phone is ringing →",
         description: "Switch to the new tab and tap Accept to take the call.",
       });
     } catch (err) {
-      try { win.close(); } catch { /* ignore */ }
+      try {
+        win.close();
+      } catch {
+        /* ignore */
+      }
       const message = err instanceof Error ? err.message : "Failed to start";
-      toast({ title: "Could not start the call", description: message, variant: "destructive" });
+      toast({
+        title: "Could not start the call",
+        description: message,
+        variant: "destructive",
+      });
     } finally {
       setMintingCall(false);
     }
   };
 
-  const { data: statusData, isLoading: loadingStatus, refetch: refetchStatus } = useGetStatus({
+  const {
+    data: statusData,
+    isLoading: loadingStatus,
+    refetch: refetchStatus,
+  } = useGetStatus({
     query: {
-      refetchInterval: (query) => query.state.data?.is_running ? 5000 : 30000,
-      queryKey: getGetStatusQueryKey()
-    }
+      refetchInterval: (query) => (query.state.data?.is_running ? 5000 : 30000),
+      queryKey: getGetStatusQueryKey(),
+    },
   });
 
   const { data: forecastData, isError: forecastError } = useGetForecast({
-    query: { retry: false, queryKey: getGetForecastQueryKey() }
+    query: { retry: false, queryKey: getGetForecastQueryKey() },
   });
 
   const triggerCheck = useTriggerCheck();
@@ -627,11 +1061,16 @@ export default function Dashboard() {
         onError: async (err) => {
           // Surface the real reason instead of a generic "failed" toast.
           // ApiError carries the server's { error: "..." } body in .data.
-          const apiErr = err as { status?: number; data?: { error?: string }; message?: string };
+          const apiErr = err as {
+            status?: number;
+            data?: { error?: string };
+            message?: string;
+          };
           const status = apiErr.status;
           const serverMsg =
-            (apiErr.data && typeof apiErr.data.error === "string" ? apiErr.data.error : undefined) ??
-            apiErr.message;
+            (apiErr.data && typeof apiErr.data.error === "string"
+              ? apiErr.data.error
+              : undefined) ?? apiErr.message;
 
           // 409 = scheduler (or a previous click) is already running the pipeline.
           // Don't fail — wait for it to finish and refresh the dashboard.
@@ -648,8 +1087,12 @@ export default function Dashboard() {
                 try {
                   const s = await getStatus();
                   if (!s.is_running) {
-                    queryClient.invalidateQueries({ queryKey: getGetStatusQueryKey() });
-                    queryClient.invalidateQueries({ queryKey: getGetForecastQueryKey() });
+                    queryClient.invalidateQueries({
+                      queryKey: getGetStatusQueryKey(),
+                    });
+                    queryClient.invalidateQueries({
+                      queryKey: getGetForecastQueryKey(),
+                    });
                     toast({ title: "Satellite check complete" });
                     return;
                   }
@@ -659,7 +1102,8 @@ export default function Dashboard() {
               }
               toast({
                 title: "Satellite check timed out",
-                description: "The background run is taking longer than usual. Try again in a moment.",
+                description:
+                  "The background run is taking longer than usual. Try again in a moment.",
                 variant: "destructive",
               });
             } finally {
@@ -673,27 +1117,36 @@ export default function Dashboard() {
             description: serverMsg ?? "Try again in a moment.",
             variant: "destructive",
           });
-        }
-      }
+        },
+      },
     );
   };
-  
-  const { data: pastoralistsData, isLoading: loadingPastoralists } = useListPastoralists({
-    query: { queryKey: getListPastoralistsQueryKey() }
-  });
+
+  const { data: pastoralistsData, isLoading: loadingPastoralists } =
+    useListPastoralists({
+      query: { queryKey: getListPastoralistsQueryKey() },
+    });
 
   const deletePastoralist = useDeletePastoralist();
-  
+
   const handleDeletePastoralist = (id: number) => {
-    deletePastoralist.mutate({ id }, {
-      onSuccess: () => {
-        toast({ title: "Pastoralist removed" });
-        queryClient.invalidateQueries({ queryKey: getListPastoralistsQueryKey() });
+    deletePastoralist.mutate(
+      { id },
+      {
+        onSuccess: () => {
+          toast({ title: "Pastoralist removed" });
+          queryClient.invalidateQueries({
+            queryKey: getListPastoralistsQueryKey(),
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Failed to remove pastoralist",
+            variant: "destructive",
+          });
+        },
       },
-      onError: () => {
-        toast({ title: "Failed to remove pastoralist", variant: "destructive" });
-      }
-    });
+    );
   };
 
   // --- Pastoralist Form ---
@@ -705,32 +1158,54 @@ export default function Dashboard() {
     goats: z.coerce.number().optional(),
     camels: z.coerce.number().optional(),
     waterSource: z.string().optional(),
-    alertsEnabled: z.boolean().default(true)
+    alertsEnabled: z.boolean().default(true),
   });
 
   const form = useForm<z.infer<typeof pastoralistSchema>>({
     resolver: zodResolver(pastoralistSchema),
-    defaultValues: { name: "", phone: "", location: "", cattle: 0, goats: 0, camels: 0, waterSource: "Borehole", alertsEnabled: true }
+    defaultValues: {
+      name: "",
+      phone: "",
+      location: "",
+      cattle: 0,
+      goats: 0,
+      camels: 0,
+      waterSource: "Borehole",
+      alertsEnabled: true,
+    },
   });
 
   const createPastoralist = useCreatePastoralist();
   const onSubmitPastoralist = (data: z.infer<typeof pastoralistSchema>) => {
-    createPastoralist.mutate({ data }, {
-      onSuccess: () => {
-        toast({ title: "Pastoralist registered successfully" });
-        form.reset();
-        queryClient.invalidateQueries({ queryKey: getListPastoralistsQueryKey() });
+    createPastoralist.mutate(
+      { data },
+      {
+        onSuccess: () => {
+          toast({ title: "Pastoralist registered successfully" });
+          form.reset();
+          queryClient.invalidateQueries({
+            queryKey: getListPastoralistsQueryKey(),
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Failed to register pastoralist",
+            variant: "destructive",
+          });
+        },
       },
-      onError: () => {
-        toast({ title: "Failed to register pastoralist", variant: "destructive" });
-      }
-    });
+    );
   };
 
   // --- Chat ---
   const [chatInput, setChatInput] = useState("");
-  const [chatHistory, setChatHistory] = useState<{role: "user"|"assistant"|"system", content: string, context?: any}[]>([
-    { role: "system", content: "ArdaLink is ready. Ask me anything about your land." }
+  const [chatHistory, setChatHistory] = useState<
+    { role: "user" | "assistant" | "system"; content: string; context?: any }[]
+  >([
+    {
+      role: "system",
+      content: "ArdaLink is ready. Ask me anything about your land.",
+    },
   ]);
   const chatMutation = useChatWithLand();
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -741,28 +1216,37 @@ export default function Dashboard() {
 
   const handleSendChat = (messageText: string = chatInput) => {
     if (!messageText.trim() || chatMutation.isPending) return;
-    
+
     const userMsg = messageText.trim();
     setChatInput("");
-    setChatHistory(prev => [...prev, { role: "user", content: userMsg }]);
+    setChatHistory((prev) => [...prev, { role: "user", content: userMsg }]);
 
     const historyForApi = chatHistory
-      .filter(m => m.role === "user" || m.role === "assistant")
-      .map(m => ({ role: m.role as "user"|"assistant", content: m.content }));
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      }));
 
-    chatMutation.mutate({ data: { message: userMsg, history: historyForApi } }, {
-      onSuccess: (reply) => {
-        setChatHistory(prev => [...prev, { 
-          role: "assistant", 
-          content: reply.reply, 
-          context: reply.context 
-        }]);
+    chatMutation.mutate(
+      { data: { message: userMsg, history: historyForApi } },
+      {
+        onSuccess: (reply) => {
+          setChatHistory((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: reply.reply,
+              context: reply.context,
+            },
+          ]);
+        },
+        onError: () => {
+          toast({ title: "Failed to send message", variant: "destructive" });
+          setChatHistory((prev) => prev.slice(0, -1)); // Remove failed message
+        },
       },
-      onError: () => {
-        toast({ title: "Failed to send message", variant: "destructive" });
-        setChatHistory(prev => prev.slice(0, -1)); // Remove failed message
-      }
-    });
+    );
   };
 
   const d = statusData?.last_run as any;
@@ -780,9 +1264,13 @@ export default function Dashboard() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0">
             <Satellite className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-base text-white tracking-wide">ArdaLink AI</span>
+          <span className="font-bold text-base text-white tracking-wide">
+            ArdaLink AI
+          </span>
         </div>
-        <div className="text-xs text-gray-500 pl-10">Bula Pesa Ward · Isiolo</div>
+        <div className="text-xs text-gray-500 pl-10">
+          Bula Pesa Ward · Isiolo
+        </div>
       </div>
 
       <div className="mx-3 mt-4 px-3 py-2 bg-green-900/30 border border-green-800/50 rounded-lg flex items-center gap-2">
@@ -791,22 +1279,40 @@ export default function Dashboard() {
         ) : (
           <span className="w-2 h-2 rounded-full bg-green-400" />
         )}
-        <span className={`text-xs font-medium ${statusData?.is_running ? "text-amber-400" : "text-green-400"}`}>
+        <span
+          className={`text-xs font-medium ${statusData?.is_running ? "text-amber-400" : "text-green-400"}`}
+        >
           {statusData?.is_running ? "Running Analysis..." : "System Live"}
         </span>
       </div>
 
       <nav className="flex-1 px-3 py-6 space-y-1">
-        <button data-testid="nav-map" onClick={() => navigate("map")} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "map" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}>
+        <button
+          data-testid="nav-map"
+          onClick={() => navigate("map")}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "map" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}
+        >
           <Satellite className="w-4 h-4" /> Map & Conditions
         </button>
-        <button data-testid="nav-pastoralists" onClick={() => navigate("pastoralists")} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "pastoralists" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}>
+        <button
+          data-testid="nav-pastoralists"
+          onClick={() => navigate("pastoralists")}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "pastoralists" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}
+        >
           <Users className="w-4 h-4" /> Pastoralists
         </button>
-        <button data-testid="nav-groundtruth" onClick={() => navigate("groundtruth")} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "groundtruth" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}>
+        <button
+          data-testid="nav-groundtruth"
+          onClick={() => navigate("groundtruth")}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "groundtruth" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}
+        >
           <ClipboardList className="w-4 h-4" /> Ground Truth
         </button>
-        <button data-testid="nav-chat" onClick={() => navigate("chat")} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "chat" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}>
+        <button
+          data-testid="nav-chat"
+          onClick={() => navigate("chat")}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === "chat" ? "bg-amber-600/20 text-amber-400 border border-amber-600/30" : "text-gray-400 hover:text-gray-200 hover:bg-gray-800"}`}
+        >
           <MessageSquare className="w-4 h-4" /> Chat with Land
         </button>
       </nav>
@@ -815,10 +1321,13 @@ export default function Dashboard() {
         <div className="mx-3 mb-6 p-3 bg-red-950/40 border border-red-900/50 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-4 h-4 text-red-400" />
-            <span className="text-xs font-semibold text-red-400">Active Alert</span>
+            <span className="text-xs font-semibold text-red-400">
+              Active Alert
+            </span>
           </div>
           <div className="text-xs text-gray-400 leading-relaxed">
-            {d.live.anomaly.wardStressedPixelPct?.toFixed(1)}% of ward stressed · {d.live.anomaly.worstQuadrant} critical
+            {d.live.anomaly.wardStressedPixelPct?.toFixed(1)}% of ward stressed
+            · {d.live.anomaly.worstQuadrant} critical
           </div>
         </div>
       )}
@@ -827,7 +1336,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-[100dvh] md:h-screen w-full bg-gray-950 text-gray-100 font-sans md:overflow-hidden">
-
       {/* --- Mobile top bar (sidebar trigger) --- */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800 shrink-0 sticky top-0 z-30">
         <div className="flex items-center gap-2 min-w-0">
@@ -835,17 +1343,30 @@ export default function Dashboard() {
             <Satellite className="w-5 h-5 text-white" />
           </div>
           <div className="min-w-0">
-            <div className="font-bold text-sm text-white truncate">ArdaLink AI</div>
-            <div className="text-[10px] text-gray-500 truncate">Bula Pesa · Isiolo</div>
+            <div className="font-bold text-sm text-white truncate">
+              ArdaLink AI
+            </div>
+            <div className="text-[10px] text-gray-500 truncate">
+              Bula Pesa · Isiolo
+            </div>
           </div>
         </div>
         <Sheet open={navOpen} onOpenChange={setNavOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="bg-gray-900 border-gray-700 text-gray-300" data-testid="btn-open-nav" aria-label="Open navigation">
+            <Button
+              variant="outline"
+              size="icon"
+              className="bg-gray-900 border-gray-700 text-gray-300"
+              data-testid="btn-open-nav"
+              aria-label="Open navigation"
+            >
               <Menu className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-64 bg-gray-900 border-gray-800 text-gray-100 flex flex-col">
+          <SheetContent
+            side="left"
+            className="p-0 w-64 bg-gray-900 border-gray-800 text-gray-100 flex flex-col"
+          >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             {sidebarInner}
           </SheetContent>
@@ -859,26 +1380,33 @@ export default function Dashboard() {
 
       {/* --- Main Content --- */}
       <div className="flex-1 flex flex-col min-w-0">
-        
         {/* Top bar */}
         <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-800 bg-gray-900/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
           <div className="min-w-0">
             <h1 className="text-base sm:text-lg font-semibold text-white">
-              {tab === "map" ? "Live Vegetation Intelligence" :
-               tab === "pastoralists" ? "Herder Registry" :
-               tab === "groundtruth" ? "Ground Truth Intelligence" :
-               "Chat with your Land"}
+              {tab === "map"
+                ? "Live Vegetation Intelligence"
+                : tab === "pastoralists"
+                  ? "Herder Registry"
+                  : tab === "groundtruth"
+                    ? "Ground Truth Intelligence"
+                    : "Chat with your Land"}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500">
-              {tab === "map" && d ? `Last updated: ${new Date(d.timestamp).toLocaleString()}` :
-               tab === "pastoralists" ? "Manage herders and alerts" :
-               tab === "groundtruth" ? "Herder voice reports → ILRI/FAO BCS, FEWS NET, LEGS, WFP CSI standards" :
-               "Ask anything in English or Swahili"}
+              {tab === "map" && d
+                ? `Last updated: ${new Date(d.timestamp).toLocaleString()}`
+                : tab === "pastoralists"
+                  ? "Manage herders and alerts"
+                  : tab === "groundtruth"
+                    ? "Herder voice reports → ILRI/FAO BCS, FEWS NET, LEGS, WFP CSI standards"
+                    : "Ask anything in English or Swahili"}
             </p>
           </div>
           <div className="flex items-center flex-wrap gap-2 sm:gap-3">
             {f?.forecast?.outlook?.riskLevel && (
-              <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border ${riskBadge(f.forecast.outlook.riskLevel.toUpperCase())}`}>
+              <span
+                className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border ${riskBadge(f.forecast.outlook.riskLevel.toUpperCase())}`}
+              >
                 {f.forecast.outlook.riskLevel.toUpperCase()} RISK
               </span>
             )}
@@ -891,9 +1419,18 @@ export default function Dashboard() {
               data-testid="btn-trigger-check"
             >
               {checkInFlight ? (
-                <><Loader2 className="w-4 h-4 sm:mr-2 animate-spin" /> <span className="hidden sm:inline">{waitingForBackgroundRun ? "Waiting…" : "Running…"}</span></>
+                <>
+                  <Loader2 className="w-4 h-4 sm:mr-2 animate-spin" />{" "}
+                  <span className="hidden sm:inline">
+                    {waitingForBackgroundRun ? "Waiting…" : "Running…"}
+                  </span>
+                </>
               ) : (
-                <><Satellite className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Run satellite check</span><span className="sm:hidden ml-1">Check</span></>
+                <>
+                  <Satellite className="w-4 h-4 sm:mr-2" />{" "}
+                  <span className="hidden sm:inline">Run satellite check</span>
+                  <span className="sm:hidden ml-1">Check</span>
+                </>
               )}
             </Button>
             <Button
@@ -905,9 +1442,19 @@ export default function Dashboard() {
               aria-label="Hear ArdaLink call you — opens an incoming-call demo in a new tab"
             >
               {mintingCall ? (
-                <><Loader2 className="w-4 h-4 sm:mr-2 animate-spin" /> <span className="hidden sm:inline">Dialling…</span></>
+                <>
+                  <Loader2 className="w-4 h-4 sm:mr-2 animate-spin" />{" "}
+                  <span className="hidden sm:inline">Dialling…</span>
+                </>
               ) : (
-                <><PhoneCall className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Hear ArdaLink call you</span><span className="sm:hidden ml-1">Ring me</span> <ExternalLink className="w-3 h-3 ml-1.5 opacity-70 hidden sm:inline" /></>
+                <>
+                  <PhoneCall className="w-4 h-4 sm:mr-2" />{" "}
+                  <span className="hidden sm:inline">
+                    Hear ArdaLink call you
+                  </span>
+                  <span className="sm:hidden ml-1">Ring me</span>{" "}
+                  <ExternalLink className="w-3 h-3 ml-1.5 opacity-70 hidden sm:inline" />
+                </>
               )}
             </Button>
             <Button
@@ -921,8 +1468,17 @@ export default function Dashboard() {
             >
               <Radio className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="icon" onClick={() => refetchStatus()} disabled={loadingStatus} className="bg-gray-900 border-gray-700 text-gray-400 hover:text-white" data-testid="btn-refresh">
-              <RefreshCw className={`w-4 h-4 ${loadingStatus ? "animate-spin" : ""}`} />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => refetchStatus()}
+              disabled={loadingStatus}
+              className="bg-gray-900 border-gray-700 text-gray-400 hover:text-white"
+              data-testid="btn-refresh"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${loadingStatus ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
         </div>
@@ -933,25 +1489,51 @@ export default function Dashboard() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div className="min-w-0 md:max-w-2xl">
               <p className="text-xs sm:text-sm text-gray-200 leading-snug">
-                <span className="text-amber-400 font-semibold">When pasture dies, herders are the last to know.</span>{" "}
+                <span className="text-amber-400 font-semibold">
+                  When pasture dies, herders are the last to know.
+                </span>{" "}
                 ArdaLink spots drought from satellites — then{" "}
-                <span className="text-amber-300 font-medium">phones each herder in their own language</span>.{" "}
+                <span className="text-amber-300 font-medium">
+                  phones each herder in their own language
+                </span>
+                .{" "}
                 <span className="text-gray-300">Swahili and English today</span>
-                <span className="text-gray-500"> · Borana, Turkana, Samburu &amp; Somali next</span>.{" "}
-                <span className="text-gray-400">No smartphone. No app. Just a 2G voice call.</span>
+                <span className="text-gray-500">
+                  {" "}
+                  · Borana, Turkana, Samburu &amp; Somali next
+                </span>
+                .{" "}
+                <span className="text-gray-400">
+                  No smartphone. No app. Just a 2G voice call.
+                </span>
               </p>
               <div className="flex flex-wrap gap-1.5 mt-2">
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-800/80 border border-gray-700 text-gray-400">Satellite → AI → Voice call</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-900/40 border border-amber-700/50 text-amber-300 font-medium">● Live · Isiolo County, Kenya</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-900/40 border border-emerald-700/50 text-emerald-300 font-medium">Multi-dialect ready</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-800/80 border border-gray-700 text-gray-400">
+                  Satellite → AI → Voice call
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-900/40 border border-amber-700/50 text-amber-300 font-medium">
+                  ● Live · Isiolo County, Kenya
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-900/40 border border-emerald-700/50 text-emerald-300 font-medium">
+                  Multi-dialect ready
+                </span>
               </div>
             </div>
             {d?.live?.anomaly && (
               <div className="md:text-right shrink-0 border-t md:border-t-0 md:border-l border-gray-800 md:pl-4 pt-2 md:pt-0">
-                <div className="text-[10px] uppercase tracking-wider text-gray-500">Currently monitoring</div>
-                <div className="text-sm font-semibold text-white">{d.live.anomaly.wardStressedPixelPct?.toFixed(1)}% of ward stressed</div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500">
+                  Currently monitoring
+                </div>
+                <div className="text-sm font-semibold text-white">
+                  {d.live.anomaly.wardStressedPixelPct?.toFixed(1)}% of ward
+                  stressed
+                </div>
                 <div className="text-xs text-amber-300">
-                  {d.live.anomaly.worstQuadrant} quadrant {d.live.anomaly.quadrantMeanAnomalyPct?.[d.live.anomaly.worstQuadrant]?.toFixed(1)}% vs 11-yr norm
+                  {d.live.anomaly.worstQuadrant} quadrant{" "}
+                  {d.live.anomaly.quadrantMeanAnomalyPct?.[
+                    d.live.anomaly.worstQuadrant
+                  ]?.toFixed(1)}
+                  % vs 11-yr norm
                 </div>
               </div>
             )}
@@ -959,7 +1541,6 @@ export default function Dashboard() {
         </div>
 
         <div className="flex-1 md:overflow-hidden md:relative">
-          
           {/* --- Tab: Map --- */}
           {tab === "map" && (
             <div className="md:absolute md:inset-0 flex flex-col md:flex-row">
@@ -974,18 +1555,47 @@ export default function Dashboard() {
                     <div className="flex flex-col items-center text-gray-400 gap-4 max-w-md text-center px-4">
                       <Satellite className="w-12 h-12 text-amber-500/70" />
                       <div>
-                        <div className="text-lg font-semibold text-white mb-2">See drought before the herders do.</div>
-                        <div className="text-sm text-gray-400 mb-4 leading-relaxed">
-                          Pulls a live Sentinel-2 vegetation reading over Bula Pesa Ward, compares it to 11 years of monthly baselines in Azure Cosmos DB, and decides whether a pastoralist needs to be called.
+                        <div className="text-lg font-semibold text-white mb-2">
+                          See drought before the herders do.
                         </div>
-                        <Button onClick={handleTriggerCheck} disabled={checkInFlight} className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="btn-empty-trigger">
-                          {checkInFlight ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {waitingForBackgroundRun ? "Waiting for background run…" : "Fetching live satellite data…"}</> : <><Satellite className="w-4 h-4 mr-2" /> Run a live satellite check</>}
+                        <div className="text-sm text-gray-400 mb-4 leading-relaxed">
+                          Pulls a live Sentinel-2 vegetation reading over Bula
+                          Pesa Ward, compares it to 11 years of monthly
+                          baselines in Azure Cosmos DB, and decides whether a
+                          pastoralist needs to be called.
+                        </div>
+                        <Button
+                          onClick={handleTriggerCheck}
+                          disabled={checkInFlight}
+                          className="bg-amber-600 hover:bg-amber-700 text-white"
+                          data-testid="btn-empty-trigger"
+                        >
+                          {checkInFlight ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />{" "}
+                              {waitingForBackgroundRun
+                                ? "Waiting for background run…"
+                                : "Fetching live satellite data…"}
+                            </>
+                          ) : (
+                            <>
+                              <Satellite className="w-4 h-4 mr-2" /> Run a live
+                              satellite check
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
                   ) : d?.live?.anomaly ? (
                     <WardMapLive
-                      quadrants={d.live.anomaly.quadrantMeanAnomalyPct || {NW:0,NE:0,SW:0,SE:0}}
+                      quadrants={
+                        d.live.anomaly.quadrantMeanAnomalyPct || {
+                          NW: 0,
+                          NE: 0,
+                          SW: 0,
+                          SE: 0,
+                        }
+                      }
                       worstQuadrant={d.live.anomaly.worstQuadrant}
                       timestamp={d.timestamp}
                       pastoralists={(pastoralistsData ?? []).map((p) => ({
@@ -994,7 +1604,9 @@ export default function Dashboard() {
                         phone: p.phone,
                         location: p.location ?? null,
                         lastContactAt: p.lastContactAt
-                          ? (typeof p.lastContactAt === "string" ? p.lastContactAt : new Date(p.lastContactAt).toISOString())
+                          ? typeof p.lastContactAt === "string"
+                            ? p.lastContactAt
+                            : new Date(p.lastContactAt).toISOString()
                           : null,
                         cattle: p.cattle ?? 0,
                         goats: p.goats ?? 0,
@@ -1002,40 +1614,87 @@ export default function Dashboard() {
                       }))}
                     />
                   ) : (
-                    <div className="text-gray-500">No satellite data available</div>
+                    <div className="text-gray-500">
+                      No satellite data available
+                    </div>
                   )}
                 </div>
               </div>
 
               <div className="w-full md:w-80 md:shrink-0 border-t md:border-t-0 md:border-l border-gray-800 bg-gray-900/40 md:overflow-y-auto p-3 sm:p-4 space-y-6">
                 {loadingStatus && !d ? (
-                  Array(5).fill(0).map((_,i) => <Skeleton key={i} className="h-20 w-full bg-gray-800 rounded-xl" />)
+                  Array(5)
+                    .fill(0)
+                    .map((_, i) => (
+                      <Skeleton
+                        key={i}
+                        className="h-20 w-full bg-gray-800 rounded-xl"
+                      />
+                    ))
                 ) : d ? (
                   <>
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <Satellite className="w-4 h-4 text-amber-500" />
-                        <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Satellite</span>
+                        <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                          Satellite
+                        </span>
                       </div>
                       <div className="space-y-2">
-                        <MetricCard icon={<Activity className="w-4 h-4" />} label="Stressed pixels" value={`${d.live?.anomaly?.wardStressedPixelPct?.toFixed(1) || 0}%`} sub="vs 11-yr norm" accent="text-red-400" />
-                        <MetricCard icon={<MapPin className="w-4 h-4" />} label="Worst quadrant" value={d.live?.anomaly?.worstQuadrant || "N/A"} accent="text-red-400" />
+                        <MetricCard
+                          icon={<Activity className="w-4 h-4" />}
+                          label="Stressed pixels"
+                          value={`${d.live?.anomaly?.wardStressedPixelPct?.toFixed(1) || 0}%`}
+                          sub="vs 11-yr norm"
+                          accent="text-red-400"
+                        />
+                        <MetricCard
+                          icon={<MapPin className="w-4 h-4" />}
+                          label="Worst quadrant"
+                          value={d.live?.anomaly?.worstQuadrant || "N/A"}
+                          accent="text-red-400"
+                        />
                         {typeof d.live?.anomaly?.NDVI?.p50 === "number" && (
-                           <MetricCard icon={<TrendingDown className="w-4 h-4" />} label="NDVI vs baseline" value={`${d.live.anomaly.NDVI.p50.toFixed(1)}%`} sub={`Mean ${d.live.anomaly.NDVI.meanPct?.toFixed(1)}%`} accent="text-orange-400" />
+                          <MetricCard
+                            icon={<TrendingDown className="w-4 h-4" />}
+                            label="NDVI vs baseline"
+                            value={`${d.live.anomaly.NDVI.p50.toFixed(1)}%`}
+                            sub={`Mean ${d.live.anomaly.NDVI.meanPct?.toFixed(1)}%`}
+                            accent="text-orange-400"
+                          />
                         )}
                       </div>
                     </div>
-                    
+
                     {d.climate && (
                       <div>
                         <div className="flex items-center gap-2 mb-3 mt-4 border-t border-gray-800 pt-4">
                           <Cloud className="w-4 h-4 text-sky-400" />
-                          <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">Climate (30d)</span>
+                          <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                            Climate (30d)
+                          </span>
                         </div>
                         <div className="space-y-2">
-                          <MetricCard icon={<Thermometer className="w-4 h-4" />} label="Avg Temp" value={`${d.climate.rolling30Day?.meanTempC?.toFixed(1)}°C`} sub={`Humidity ${d.climate.current?.humidityPct?.toFixed(0)}%`} accent="text-orange-300" />
-                          <MetricCard icon={<Droplets className="w-4 h-4" />} label="Rainfall" value={`${d.climate.rolling30Day?.totalPrecipMm?.toFixed(1)}mm`} sub={`${d.climate.rolling30Day?.rainyDays} rainy days`} accent="text-sky-400" />
-                          <MetricCard icon={<Wind className="w-4 h-4" />} label="ET₀ (Evap demand)" value={`${d.climate.rolling30Day?.totalET0Mm?.toFixed(1)}mm`} accent="text-yellow-400" />
+                          <MetricCard
+                            icon={<Thermometer className="w-4 h-4" />}
+                            label="Avg Temp"
+                            value={`${d.climate.rolling30Day?.meanTempC?.toFixed(1)}°C`}
+                            sub={`Humidity ${d.climate.current?.humidityPct?.toFixed(0)}%`}
+                            accent="text-orange-300"
+                          />
+                          <MetricCard
+                            icon={<Droplets className="w-4 h-4" />}
+                            label="Rainfall"
+                            value={`${d.climate.rolling30Day?.totalPrecipMm?.toFixed(1)}mm`}
+                            sub={`${d.climate.rolling30Day?.rainyDays} rainy days`}
+                            accent="text-sky-400"
+                          />
+                          <MetricCard
+                            icon={<Wind className="w-4 h-4" />}
+                            label="ET₀ (Evap demand)"
+                            value={`${d.climate.rolling30Day?.totalET0Mm?.toFixed(1)}mm`}
+                            accent="text-yellow-400"
+                          />
                         </div>
                       </div>
                     )}
@@ -1044,16 +1703,31 @@ export default function Dashboard() {
                       <div>
                         <div className="flex items-center gap-2 mb-3 mt-4 border-t border-gray-800 pt-4">
                           <TrendingDown className="w-4 h-4 text-green-400" />
-                          <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">14-Day Forecast</span>
+                          <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                            14-Day Forecast
+                          </span>
                         </div>
                         <div className="space-y-2">
-                           <MetricCard icon={<Cloud className="w-4 h-4" />} label="Expected Rain" value={`${f.forecast.forecast14d.totalPrecipMm?.toFixed(1)}mm`} sub={`${f.forecast.forecast14d.rainyDays ?? 0} rainy days`} accent="text-sky-400" />
-                           <MetricCard icon={<Wind className="w-4 h-4" />} label="Expected ET₀" value={`${f.forecast.forecast14d.totalET0Mm?.toFixed(1)}mm`} sub={`Effective rain ${f.forecast.forecast14d.effectiveRainMm?.toFixed(1)}mm`} accent="text-yellow-400" />
-                           {f.forecast.outlook?.recommendation && (
-                             <div className="mt-4 p-3 bg-blue-900/20 border border-blue-800/40 rounded-xl text-sm text-blue-200">
-                               <strong>Rec:</strong> {f.forecast.outlook.recommendation}
-                             </div>
-                           )}
+                          <MetricCard
+                            icon={<Cloud className="w-4 h-4" />}
+                            label="Expected Rain"
+                            value={`${f.forecast.forecast14d.totalPrecipMm?.toFixed(1)}mm`}
+                            sub={`${f.forecast.forecast14d.rainyDays ?? 0} rainy days`}
+                            accent="text-sky-400"
+                          />
+                          <MetricCard
+                            icon={<Wind className="w-4 h-4" />}
+                            label="Expected ET₀"
+                            value={`${f.forecast.forecast14d.totalET0Mm?.toFixed(1)}mm`}
+                            sub={`Effective rain ${f.forecast.forecast14d.effectiveRainMm?.toFixed(1)}mm`}
+                            accent="text-yellow-400"
+                          />
+                          {f.forecast.outlook?.recommendation && (
+                            <div className="mt-4 p-3 bg-blue-900/20 border border-blue-800/40 rounded-xl text-sm text-blue-200">
+                              <strong>Rec:</strong>{" "}
+                              {f.forecast.outlook.recommendation}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -1068,37 +1742,82 @@ export default function Dashboard() {
             <div className="md:absolute md:inset-0 flex flex-col md:flex-row p-3 sm:p-6 gap-4 sm:gap-6 md:overflow-y-auto">
               <div className="flex-1 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col">
                 <div className="p-4 border-b border-gray-800 bg-gray-900 flex items-center justify-between">
-                  <h2 className="text-base font-semibold text-white">Registered Herders</h2>
-                  <span className="text-sm text-gray-400">{pastoralistsData?.length || 0} total</span>
+                  <h2 className="text-base font-semibold text-white">
+                    Registered Herders
+                  </h2>
+                  <span className="text-sm text-gray-400">
+                    {pastoralistsData?.length || 0} total
+                  </span>
                 </div>
                 <div className="flex-1 overflow-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="border-gray-800 hover:bg-transparent">
-                        <TableHead className="text-gray-400">Name / Phone</TableHead>
-                        <TableHead className="text-gray-400">Location</TableHead>
-                        <TableHead className="text-gray-400">Herd (C/G/C)</TableHead>
+                        <TableHead className="text-gray-400">
+                          Name / Phone
+                        </TableHead>
+                        <TableHead className="text-gray-400">
+                          Location
+                        </TableHead>
+                        <TableHead className="text-gray-400">
+                          Herd (C/G/C)
+                        </TableHead>
                         <TableHead className="text-gray-400">Water</TableHead>
-                        <TableHead className="text-gray-400 text-right">Actions</TableHead>
+                        <TableHead className="text-gray-400 text-right">
+                          Actions
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {loadingPastoralists ? (
-                        <TableRow><TableCell colSpan={5} className="text-center py-8 text-gray-500">Loading...</TableCell></TableRow>
+                        <TableRow>
+                          <TableCell
+                            colSpan={5}
+                            className="text-center py-8 text-gray-500"
+                          >
+                            Loading...
+                          </TableCell>
+                        </TableRow>
                       ) : !pastoralistsData?.length ? (
-                        <TableRow><TableCell colSpan={5} className="text-center py-8 text-gray-500">No pastoralists registered.</TableCell></TableRow>
+                        <TableRow>
+                          <TableCell
+                            colSpan={5}
+                            className="text-center py-8 text-gray-500"
+                          >
+                            No pastoralists registered.
+                          </TableCell>
+                        </TableRow>
                       ) : (
-                        pastoralistsData.map(p => (
-                          <TableRow key={p.id} className="border-gray-800 hover:bg-gray-800/50">
+                        pastoralistsData.map((p) => (
+                          <TableRow
+                            key={p.id}
+                            className="border-gray-800 hover:bg-gray-800/50"
+                          >
                             <TableCell>
-                              <div className="font-medium text-gray-200">{p.name}</div>
-                              <div className="text-xs text-gray-500">{p.phone}</div>
+                              <div className="font-medium text-gray-200">
+                                {p.name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {p.phone}
+                              </div>
                             </TableCell>
-                            <TableCell className="text-gray-300">{p.location || "-"}</TableCell>
-                            <TableCell className="text-gray-400">{p.cattle}/{p.goats}/{p.camels}</TableCell>
-                            <TableCell className="text-gray-400">{p.waterSource || "-"}</TableCell>
+                            <TableCell className="text-gray-300">
+                              {p.location || "-"}
+                            </TableCell>
+                            <TableCell className="text-gray-400">
+                              {p.cattle}/{p.goats}/{p.camels}
+                            </TableCell>
+                            <TableCell className="text-gray-400">
+                              {p.waterSource || "-"}
+                            </TableCell>
                             <TableCell className="text-right">
-                              <Button variant="ghost" size="icon" onClick={() => handleDeletePastoralist(p.id)} className="h-8 w-8 text-gray-500 hover:text-red-400 hover:bg-red-950/30" data-testid={`btn-delete-${p.id}`}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeletePastoralist(p.id)}
+                                className="h-8 w-8 text-gray-500 hover:text-red-400 hover:bg-red-950/30"
+                                data-testid={`btn-delete-${p.id}`}
+                              >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </TableCell>
@@ -1111,71 +1830,186 @@ export default function Dashboard() {
               </div>
 
               <div className="w-full md:w-80 md:shrink-0 bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-5 h-fit">
-                <h3 className="font-semibold text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Register Herder</h3>
+                <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> Register Herder
+                </h3>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmitPastoralist)} className="space-y-4">
-                    <FormField control={form.control} name="name" render={({field}) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-300">Full Name</FormLabel>
-                        <FormControl><Input {...field} className="bg-gray-950 border-gray-700 text-white" data-testid="input-name" /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="phone" render={({field}) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-300">Phone Number</FormLabel>
-                        <FormControl><Input {...field} placeholder="+254..." className="bg-gray-950 border-gray-700 text-white" data-testid="input-phone" /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="location" render={({field}) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-300">Location / Area</FormLabel>
-                        <FormControl><Input {...field} className="bg-gray-950 border-gray-700 text-white" data-testid="input-location" /></FormControl>
-                      </FormItem>
-                    )} />
-                    <div className="grid grid-cols-3 gap-2">
-                      <FormField control={form.control} name="cattle" render={({field}) => (
-                        <FormItem><FormLabel className="text-xs text-gray-400">Cattle</FormLabel><FormControl><Input type="number" {...field} className="bg-gray-950 border-gray-700 text-white h-8" /></FormControl></FormItem>
-                      )} />
-                      <FormField control={form.control} name="goats" render={({field}) => (
-                        <FormItem><FormLabel className="text-xs text-gray-400">Goats/Sheep</FormLabel><FormControl><Input type="number" {...field} className="bg-gray-950 border-gray-700 text-white h-8" /></FormControl></FormItem>
-                      )} />
-                      <FormField control={form.control} name="camels" render={({field}) => (
-                        <FormItem><FormLabel className="text-xs text-gray-400">Camels</FormLabel><FormControl><Input type="number" {...field} className="bg-gray-950 border-gray-700 text-white h-8" /></FormControl></FormItem>
-                      )} />
-                    </div>
-                    <FormField control={form.control} name="waterSource" render={({field}) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-300">Primary Water Source</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmitPastoralist)}
+                    className="space-y-4"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300">
+                            Full Name
+                          </FormLabel>
                           <FormControl>
-                            <SelectTrigger className="bg-gray-950 border-gray-700 text-white">
-                              <SelectValue placeholder="Select source" />
-                            </SelectTrigger>
+                            <Input
+                              {...field}
+                              className="bg-gray-950 border-gray-700 text-white"
+                              data-testid="input-name"
+                            />
                           </FormControl>
-                          <SelectContent className="bg-gray-900 border-gray-700 text-white">
-                            <SelectItem value="Borehole">Borehole</SelectItem>
-                            <SelectItem value="River">River</SelectItem>
-                            <SelectItem value="Dam">Dam / Pan</SelectItem>
-                            <SelectItem value="Berkad">Berkad</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="alertsEnabled" render={({field}) => (
-                      <FormItem className="flex items-center justify-between rounded-lg border border-gray-800 p-3 bg-gray-950/50">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-gray-300 text-sm">SMS Alerts</FormLabel>
-                        </div>
-                        <FormControl>
-                          <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-alerts" />
-                        </FormControl>
-                      </FormItem>
-                    )} />
-                    <Button type="submit" disabled={createPastoralist.isPending} className="w-full bg-amber-600 hover:bg-amber-700 text-white" data-testid="btn-submit-pastoralist">
-                      {createPastoralist.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Register"}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300">
+                            Phone Number
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="+254..."
+                              className="bg-gray-950 border-gray-700 text-white"
+                              data-testid="input-phone"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="location"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300">
+                            Location / Area
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              className="bg-gray-950 border-gray-700 text-white"
+                              data-testid="input-location"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-3 gap-2">
+                      <FormField
+                        control={form.control}
+                        name="cattle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs text-gray-400">
+                              Cattle
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                className="bg-gray-950 border-gray-700 text-white h-8"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="goats"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs text-gray-400">
+                              Goats/Sheep
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                className="bg-gray-950 border-gray-700 text-white h-8"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="camels"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs text-gray-400">
+                              Camels
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                className="bg-gray-950 border-gray-700 text-white h-8"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="waterSource"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300">
+                            Primary Water Source
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="bg-gray-950 border-gray-700 text-white">
+                                <SelectValue placeholder="Select source" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-gray-900 border-gray-700 text-white">
+                              <SelectItem value="Borehole">Borehole</SelectItem>
+                              <SelectItem value="River">River</SelectItem>
+                              <SelectItem value="Dam">Dam / Pan</SelectItem>
+                              <SelectItem value="Berkad">Berkad</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="alertsEnabled"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border border-gray-800 p-3 bg-gray-950/50">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-gray-300 text-sm">
+                              SMS Alerts
+                            </FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              data-testid="switch-alerts"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="submit"
+                      disabled={createPastoralist.isPending}
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                      data-testid="btn-submit-pastoralist"
+                    >
+                      {createPastoralist.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Register"
+                      )}
                     </Button>
                   </form>
                 </Form>
@@ -1191,31 +2025,50 @@ export default function Dashboard() {
             <div className="md:absolute md:inset-0 flex flex-col bg-gray-900 min-h-[60vh]">
               <div className="flex-1 md:overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
                 {chatHistory.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                      msg.role === "system" ? "bg-blue-900/20 border border-blue-800/40 text-blue-200" :
-                      msg.role === "user" ? "bg-amber-600/20 border border-amber-600/30 text-amber-100 rounded-tr-sm" :
-                      "bg-gray-800 border border-gray-700 text-gray-200 rounded-tl-sm flex gap-3 items-start"
-                    }`}>
+                  <div
+                    key={idx}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                        msg.role === "system"
+                          ? "bg-blue-900/20 border border-blue-800/40 text-blue-200"
+                          : msg.role === "user"
+                            ? "bg-amber-600/20 border border-amber-600/30 text-amber-100 rounded-tr-sm"
+                            : "bg-gray-800 border border-gray-700 text-gray-200 rounded-tl-sm flex gap-3 items-start"
+                      }`}
+                    >
                       {msg.role === "assistant" && (
                         <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-600 to-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
                           <Radio className="w-3 h-3 text-green-100" />
                         </div>
                       )}
                       <div>
-                        {msg.role === "system" && <span className="font-semibold text-blue-400 mr-2">System:</span>}
+                        {msg.role === "system" && (
+                          <span className="font-semibold text-blue-400 mr-2">
+                            System:
+                          </span>
+                        )}
                         {msg.content}
                         {msg.context && (
                           <div className="mt-3 flex flex-wrap gap-2">
-                            {msg.context.riskLevel && <span className="px-2 py-0.5 text-[10px] rounded-full bg-gray-900 text-gray-400 border border-gray-700">Risk: {msg.context.riskLevel}</span>}
-                            {msg.context.worstQuadrant && <span className="px-2 py-0.5 text-[10px] rounded-full bg-gray-900 text-gray-400 border border-gray-700">Worst: {msg.context.worstQuadrant}</span>}
+                            {msg.context.riskLevel && (
+                              <span className="px-2 py-0.5 text-[10px] rounded-full bg-gray-900 text-gray-400 border border-gray-700">
+                                Risk: {msg.context.riskLevel}
+                              </span>
+                            )}
+                            {msg.context.worstQuadrant && (
+                              <span className="px-2 py-0.5 text-[10px] rounded-full bg-gray-900 text-gray-400 border border-gray-700">
+                                Worst: {msg.context.worstQuadrant}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
                 ))}
-                
+
                 {chatMutation.isPending && (
                   <div className="flex justify-start">
                     <div className="max-w-[80%] bg-gray-800 border border-gray-700 text-gray-400 rounded-2xl rounded-tl-sm px-4 py-3 text-sm flex items-center gap-3">
@@ -1229,31 +2082,52 @@ export default function Dashboard() {
 
               <div className="p-4 bg-gray-950 border-t border-gray-800 shrink-0">
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {["Je, mvua inakuja lini?", "Where is the best pasture now?", "Should I move my cattle from SE?", "Hali ya maji Bula Pesa?"].map((q, i) => (
-                    <button key={i} onClick={() => handleSendChat(q)} className="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-full text-xs text-gray-400 transition-colors" data-testid={`btn-quick-chat-${i}`}>
+                  {[
+                    "Je, mvua inakuja lini?",
+                    "Where is the best pasture now?",
+                    "Should I move my cattle from SE?",
+                    "Hali ya maji Bula Pesa?",
+                  ].map((q, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleSendChat(q)}
+                      className="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-full text-xs text-gray-400 transition-colors"
+                      data-testid={`btn-quick-chat-${i}`}
+                    >
                       {q}
                     </button>
                   ))}
                 </div>
-                <form onSubmit={(e) => { e.preventDefault(); handleSendChat(); }} className="flex items-end gap-3">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendChat();
+                  }}
+                  className="flex items-end gap-3"
+                >
                   <div className="flex-1 relative">
-                    <Input 
-                      value={chatInput} 
+                    <Input
+                      value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Ask about conditions, forecast, or recommendations..." 
+                      placeholder="Ask about conditions, forecast, or recommendations..."
                       className="w-full bg-gray-900 border-gray-700 text-white h-12 pl-4 pr-12 rounded-xl focus-visible:ring-amber-500"
                       disabled={chatMutation.isPending}
                       data-testid="input-chat"
                     />
                   </div>
-                  <Button type="submit" disabled={!chatInput.trim() || chatMutation.isPending} size="icon" className="h-12 w-12 rounded-xl bg-amber-600 hover:bg-amber-700 shrink-0" data-testid="btn-send-chat">
+                  <Button
+                    type="submit"
+                    disabled={!chatInput.trim() || chatMutation.isPending}
+                    size="icon"
+                    className="h-12 w-12 rounded-xl bg-amber-600 hover:bg-amber-700 shrink-0"
+                    data-testid="btn-send-chat"
+                  >
                     <Send className="w-5 h-5 text-white" />
                   </Button>
                 </form>
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>

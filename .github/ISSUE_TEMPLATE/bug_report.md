@@ -9,6 +9,7 @@ name: Bug report
 ## Expected
 
 ## Environment
+
 - Browser:
 - Dashboard or Talk:
 - API version:

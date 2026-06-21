@@ -34,7 +34,10 @@ const MAX_PERSISTED = 20;
 
 function generateSessionId(): string {
   try {
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    if (
+      typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID === "function"
+    ) {
       return crypto.randomUUID();
     }
   } catch {
@@ -80,7 +83,10 @@ function loadHistory(): ChatMessage[] {
 
 function saveHistory(msgs: ChatMessage[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs.slice(-MAX_PERSISTED)));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(msgs.slice(-MAX_PERSISTED)),
+    );
   } catch {
     // ignore quota
   }
@@ -110,12 +116,18 @@ export default function ChatPanel() {
     const text = input.trim();
     if (!text || sending) return;
     if (text.length > 500) {
-      setError("Ujumbe ni mrefu sana (zaidi ya herufi 500). · Message too long (>500 chars).");
+      setError(
+        "Ujumbe ni mrefu sana (zaidi ya herufi 500). · Message too long (>500 chars).",
+      );
       return;
     }
 
     setError("");
-    const userMsg: ChatMessage = { role: "user", content: text, at: Date.now() };
+    const userMsg: ChatMessage = {
+      role: "user",
+      content: text,
+      at: Date.now(),
+    };
     const nextMsgs = [...messages, userMsg];
     setMessages(nextMsgs);
     setInput("");
@@ -145,7 +157,10 @@ export default function ChatPanel() {
             `Umefika kikomo cha ujumbe kwa siku (${err.limit ?? 30}). Rudi kesho. · Daily chat limit reached (${err.limit ?? 30}). Come back tomorrow.`,
           );
         } else {
-          setError(err.message ?? `Tatizo la mtandao (HTTP ${res.status}). · Network error.`);
+          setError(
+            err.message ??
+              `Tatizo la mtandao (HTTP ${res.status}). · Network error.`,
+          );
         }
         // Roll back the user message so they can retry without polluting history
         setMessages(messages);
@@ -191,8 +206,12 @@ export default function ChatPanel() {
     <div className="flex flex-col h-[60vh] min-h-[420px] bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
       <div className="px-4 py-3 border-b border-stone-200 flex items-center justify-between bg-stone-50">
         <div>
-          <p className="text-sm font-semibold text-stone-900">Andika na ardhi yako</p>
-          <p className="text-[11px] text-stone-500">Chat with your land — uliza kuhusu malisho, maji, hali ya hewa</p>
+          <p className="text-sm font-semibold text-stone-900">
+            Andika na ardhi yako
+          </p>
+          <p className="text-[11px] text-stone-500">
+            Chat with your land — uliza kuhusu malisho, maji, hali ya hewa
+          </p>
         </div>
         {remaining != null && (
           <span className="text-[10px] uppercase tracking-wider text-stone-500 bg-white border border-stone-200 rounded-full px-2 py-0.5">
@@ -209,7 +228,9 @@ export default function ChatPanel() {
           <div className="text-center py-8 text-sm text-stone-500 leading-relaxed">
             <p className="text-2xl mb-2">🌾</p>
             <p>Anza mazungumzo — uliza chochote kuhusu hali ya malisho.</p>
-            <p className="text-xs text-stone-400 mt-1">Start the conversation — ask anything about pasture conditions.</p>
+            <p className="text-xs text-stone-400 mt-1">
+              Start the conversation — ask anything about pasture conditions.
+            </p>
           </div>
         )}
         {messages.map((m, i) => (
@@ -232,9 +253,18 @@ export default function ChatPanel() {
           <div className="flex justify-start">
             <div className="bg-white border border-stone-200 rounded-2xl rounded-bl-sm px-3.5 py-2.5">
               <span className="inline-flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                />
               </span>
             </div>
           </div>
@@ -247,7 +277,10 @@ export default function ChatPanel() {
         </div>
       )}
 
-      <form onSubmit={handleSend} className="border-t border-stone-200 p-3 bg-white">
+      <form
+        onSubmit={handleSend}
+        className="border-t border-stone-200 p-3 bg-white"
+      >
         <div className="flex items-end gap-2">
           <textarea
             value={input}

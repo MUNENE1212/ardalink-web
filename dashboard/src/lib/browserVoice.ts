@@ -26,7 +26,11 @@ function floatToPCM16(input: Float32Array): Int16Array {
 // Linear-interpolation resampler. Realtime API requires exactly 24 kHz mono;
 // the browser may ignore our AudioContext sampleRate hint and run at 44.1/48k,
 // in which case sending raw frames would make us sound like chipmunks to the AI.
-function resample(input: Float32Array, fromRate: number, toRate: number): Float32Array {
+function resample(
+  input: Float32Array,
+  fromRate: number,
+  toRate: number,
+): Float32Array {
   if (fromRate === toRate) return input;
   const ratio = fromRate / toRate;
   const outLen = Math.floor(input.length / ratio);
@@ -57,7 +61,7 @@ function arrayBufferToBase64(buf: ArrayBuffer): string {
   for (let i = 0; i < bytes.length; i += chunkSize) {
     binary += String.fromCharCode.apply(
       null,
-      bytes.subarray(i, i + chunkSize) as unknown as number[]
+      bytes.subarray(i, i + chunkSize) as unknown as number[],
     );
   }
   return btoa(binary);
@@ -105,8 +109,8 @@ export class BrowserVoiceClient {
 
     try {
       const AudioContextClass =
-        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ||
-        window.AudioContext;
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext || window.AudioContext;
       this.audioCtx = new AudioContextClass({ sampleRate: SAMPLE_RATE });
       // The browser may ignore the sampleRate hint (Safari, some Linux). Use
       // the actual rate so we resample correctly on both sides.
@@ -134,7 +138,9 @@ export class BrowserVoiceClient {
         if (name === "NotAllowedError" || name === "SecurityError") {
           // Either the user denied the prompt, OR the page is embedded in an
           // iframe (e.g. the Replit preview/canvas) that withholds the mic.
-          throw new Error(window.self !== window.top ? "MIC_BLOCKED_IFRAME" : "MIC_DENIED");
+          throw new Error(
+            window.self !== window.top ? "MIC_BLOCKED_IFRAME" : "MIC_DENIED",
+          );
         }
         if (name === "NotFoundError" || name === "OverconstrainedError") {
           throw new Error("MIC_NOT_FOUND");
@@ -150,7 +156,8 @@ export class BrowserVoiceClient {
       await new Promise<void>((resolve, reject) => {
         if (!this.ws) return reject(new Error("WebSocket not initialized"));
         this.ws.onopen = () => resolve();
-        this.ws.onerror = () => reject(new Error("WebSocket connection failed"));
+        this.ws.onerror = () =>
+          reject(new Error("WebSocket connection failed"));
       });
       if (this.aborted) throw new Error("aborted");
 
@@ -205,7 +212,10 @@ export class BrowserVoiceClient {
     // Resample to true 24 kHz if AudioContext didn't honor our hint.
     const resampled = resample(input, this.contextRate, SAMPLE_RATE);
     const pcm16 = floatToPCM16(resampled);
-    const ab = pcm16.buffer.slice(pcm16.byteOffset, pcm16.byteOffset + pcm16.byteLength) as ArrayBuffer;
+    const ab = pcm16.buffer.slice(
+      pcm16.byteOffset,
+      pcm16.byteOffset + pcm16.byteLength,
+    ) as ArrayBuffer;
     const b64 = arrayBufferToBase64(ab);
     this.ws.send(JSON.stringify({ type: "audio", data: b64 }));
   }
@@ -226,10 +236,14 @@ export class BrowserVoiceClient {
       return;
     }
     if (this.aiSpeakingTimer) clearTimeout(this.aiSpeakingTimer);
-    const remainingMs = Math.max(0, this.playbackTime - this.audioCtx.currentTime) * 1000;
+    const remainingMs =
+      Math.max(0, this.playbackTime - this.audioCtx.currentTime) * 1000;
     this.aiSpeakingTimer = setTimeout(() => {
       this.aiSpeakingTimer = null;
-      if (!this.audioCtx) { this.aiSpeaking = false; return; }
+      if (!this.audioCtx) {
+        this.aiSpeaking = false;
+        return;
+      }
       // If more audio was queued in the meantime, wait again.
       if (this.playbackTime > this.audioCtx.currentTime + 0.05) {
         this.scheduleGateRelease(extraTailMs);
@@ -253,7 +267,11 @@ export class BrowserVoiceClient {
       // Server says response audio finished sending. Hold the mic gate closed
       // until the scheduled playback queue actually drains, plus a 250ms tail.
       this.scheduleGateRelease(250);
-    } else if (msg.type === "transcript" && typeof msg.role === "string" && typeof msg.text === "string") {
+    } else if (
+      msg.type === "transcript" &&
+      typeof msg.role === "string" &&
+      typeof msg.text === "string"
+    ) {
       this.callbacks.onTranscript?.({
         role: msg.role as "user" | "assistant",
         text: msg.text,
@@ -284,21 +302,44 @@ export class BrowserVoiceClient {
   stop(): void {
     this.aborted = true;
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      try { this.ws.send(JSON.stringify({ type: "stop" })); } catch { /* ignore */ }
+      try {
+        this.ws.send(JSON.stringify({ type: "stop" }));
+      } catch {
+        /* ignore */
+      }
     }
     this.cleanup();
     this.setState("stopped");
   }
 
   private cleanup(): void {
-    if (this.aiSpeakingTimer) { clearTimeout(this.aiSpeakingTimer); this.aiSpeakingTimer = null; }
+    if (this.aiSpeakingTimer) {
+      clearTimeout(this.aiSpeakingTimer);
+      this.aiSpeakingTimer = null;
+    }
     this.aiSpeaking = false;
-    try { this.processor?.disconnect(); } catch { /* ignore */ }
-    try { this.source?.disconnect(); } catch { /* ignore */ }
-    try { this.silentGain?.disconnect(); } catch { /* ignore */ }
+    try {
+      this.processor?.disconnect();
+    } catch {
+      /* ignore */
+    }
+    try {
+      this.source?.disconnect();
+    } catch {
+      /* ignore */
+    }
+    try {
+      this.silentGain?.disconnect();
+    } catch {
+      /* ignore */
+    }
     this.micStream?.getTracks().forEach((t) => t.stop());
     if (this.ws && this.ws.readyState <= WebSocket.OPEN) {
-      try { this.ws.close(); } catch { /* ignore */ }
+      try {
+        this.ws.close();
+      } catch {
+        /* ignore */
+      }
     }
     if (this.audioCtx && this.audioCtx.state !== "closed") {
       void this.audioCtx.close();

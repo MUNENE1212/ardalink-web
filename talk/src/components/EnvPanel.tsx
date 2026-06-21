@@ -58,7 +58,9 @@ function fmtPct(n: number | undefined, digits = 1): string {
   return n == null || !Number.isFinite(n) ? "—" : `${n.toFixed(digits)}%`;
 }
 function fmtNum(n: number | undefined, digits = 1, suffix = ""): string {
-  return n == null || !Number.isFinite(n) ? "—" : `${n.toFixed(digits)}${suffix}`;
+  return n == null || !Number.isFinite(n)
+    ? "—"
+    : `${n.toFixed(digits)}${suffix}`;
 }
 
 export default function EnvPanel() {
@@ -112,7 +114,9 @@ export default function EnvPanel() {
           />
         </div>
         <div className="px-4 py-3 border-t border-stone-200">
-          <p className="text-sm font-semibold text-stone-900">Bula Pesa Ward · Isiolo</p>
+          <p className="text-sm font-semibold text-stone-900">
+            Bula Pesa Ward · Isiolo
+          </p>
           <p className="text-[11px] text-stone-500">0.355°N · 37.583°E</p>
         </div>
       </div>
@@ -125,21 +129,30 @@ export default function EnvPanel() {
 
       {error && !data && (
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-sm text-red-700">
-          Hatukuweza kupata data ya satelaiti sasa. · Could not load satellite data right now.
+          Hatukuweza kupata data ya satelaiti sasa. · Could not load satellite
+          data right now.
         </div>
       )}
 
       {!loading && data && !last && (
         <div className="bg-white rounded-2xl border border-stone-200 p-5 text-sm text-stone-600">
-          <p className="font-medium text-stone-800 mb-1">Hakuna data ya satelaiti bado.</p>
-          <p className="text-stone-500 text-xs">No satellite check has run yet — please check back shortly.</p>
+          <p className="font-medium text-stone-800 mb-1">
+            Hakuna data ya satelaiti bado.
+          </p>
+          <p className="text-stone-500 text-xs">
+            No satellite check has run yet — please check back shortly.
+          </p>
         </div>
       )}
 
       {/* Risk badge */}
       {forecast?.outlook?.riskLevel && (
-        <div className={`rounded-2xl border p-4 ${riskColor(forecast.outlook.riskLevel)}`}>
-          <p className="text-[10px] uppercase tracking-wider opacity-70 mb-1">14-day outlook · Mtazamo wa siku 14</p>
+        <div
+          className={`rounded-2xl border p-4 ${riskColor(forecast.outlook.riskLevel)}`}
+        >
+          <p className="text-[10px] uppercase tracking-wider opacity-70 mb-1">
+            14-day outlook · Mtazamo wa siku 14
+          </p>
           <p className="text-xl font-bold capitalize">
             {forecast.outlook.riskLevel} risk
           </p>
@@ -149,7 +162,9 @@ export default function EnvPanel() {
             </p>
           )}
           {forecast.outlook.recommendation && (
-            <p className="text-xs mt-2 leading-snug">{forecast.outlook.recommendation}</p>
+            <p className="text-xs mt-2 leading-snug">
+              {forecast.outlook.recommendation}
+            </p>
           )}
         </div>
       )}
@@ -163,19 +178,27 @@ export default function EnvPanel() {
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-[11px] text-stone-500">Stressed pixels</p>
-              <p className="font-semibold text-stone-900">{fmtPct(anomaly.wardStressedPixelPct)}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtPct(anomaly.wardStressedPixelPct)}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Worst quadrant</p>
-              <p className="font-semibold text-stone-900">{anomaly.worstQuadrant ?? "—"}</p>
+              <p className="font-semibold text-stone-900">
+                {anomaly.worstQuadrant ?? "—"}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Median NDVI Δ</p>
-              <p className="font-semibold text-stone-900">{fmtPct(anomaly.NDVI?.p50)}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtPct(anomaly.NDVI?.p50)}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Worst 5% NDVI Δ</p>
-              <p className="font-semibold text-stone-900">{fmtPct(anomaly.NDVI?.p5)}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtPct(anomaly.NDVI?.p5)}
+              </p>
             </div>
           </div>
           {last?.live?.imageDates?.[0] && (
@@ -195,15 +218,21 @@ export default function EnvPanel() {
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-[11px] text-stone-500">Temperature</p>
-              <p className="font-semibold text-stone-900">{fmtNum(climate.meanTempC, 1, "°C")}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtNum(climate.meanTempC, 1, "°C")}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Rainfall</p>
-              <p className="font-semibold text-stone-900">{fmtNum(climate.totalPrecipMm, 1, " mm")}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtNum(climate.totalPrecipMm, 1, " mm")}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Rainy days</p>
-              <p className="font-semibold text-stone-900">{climate.rainyDays ?? "—"}</p>
+              <p className="font-semibold text-stone-900">
+                {climate.rainyDays ?? "—"}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Soil moisture</p>
@@ -214,7 +243,9 @@ export default function EnvPanel() {
               </p>
             </div>
             <div className="col-span-2">
-              <p className="text-[11px] text-stone-500">Drought severity · Ukame</p>
+              <p className="text-[11px] text-stone-500">
+                Drought severity · Ukame
+              </p>
               <p className="font-semibold text-stone-900 capitalize">
                 {climate.droughtSeverity ?? "—"}
               </p>
@@ -232,16 +263,22 @@ export default function EnvPanel() {
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-[11px] text-stone-500">Rain expected</p>
-              <p className="font-semibold text-stone-900">{fmtNum(forecast.forecast14d.totalPrecipMm, 1, " mm")}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtNum(forecast.forecast14d.totalPrecipMm, 1, " mm")}
+              </p>
             </div>
             <div>
               <p className="text-[11px] text-stone-500">Forecast MAI</p>
-              <p className="font-semibold text-stone-900">{fmtNum(forecast.forecast14d.forecastMAI, 3)}</p>
+              <p className="font-semibold text-stone-900">
+                {fmtNum(forecast.forecast14d.forecastMAI, 3)}
+              </p>
             </div>
             {forecast.outlook?.estimatedRecoveryDays != null && (
               <div className="col-span-2">
                 <p className="text-[11px] text-stone-500">Estimated recovery</p>
-                <p className="font-semibold text-stone-900">{forecast.outlook.estimatedRecoveryDays} days</p>
+                <p className="font-semibold text-stone-900">
+                  {forecast.outlook.estimatedRecoveryDays} days
+                </p>
               </div>
             )}
           </div>

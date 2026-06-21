@@ -10,6 +10,7 @@
 4. Open a PR against `dev`
 
 ## Standards
+
 - React 19 + Vite + Tailwind v4
 - TypeScript strict
 - Vitest + Testing Library

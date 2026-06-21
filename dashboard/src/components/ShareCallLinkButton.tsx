@@ -1,7 +1,22 @@
 import { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Share2, Copy, Check, Smartphone, RefreshCw, Loader2, AlertTriangle, Shield } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Share2,
+  Copy,
+  Check,
+  Smartphone,
+  RefreshCw,
+  Loader2,
+  AlertTriangle,
+  Shield,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,7 +29,9 @@ interface MintResult {
 async function mintToken(): Promise<MintResult> {
   const res = await fetch("/api/call-tokens", { method: "POST" });
   if (res.status === 429) {
-    throw new Error("Too many active call links — close some open share dialogs and try again.");
+    throw new Error(
+      "Too many active call links — close some open share dialogs and try again.",
+    );
   }
   if (!res.ok) throw new Error(`Could not generate link (HTTP ${res.status})`);
   return (await res.json()) as MintResult;
@@ -109,10 +126,12 @@ export function ShareCallLinkButton() {
         <DialogContent className="bg-gray-950 border-gray-800 text-gray-100 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
-              <Smartphone className="w-5 h-5 text-amber-500" /> Send ArdaLink to a recipient
+              <Smartphone className="w-5 h-5 text-amber-500" /> Send ArdaLink to
+              a recipient
             </DialogTitle>
             <DialogDescription className="text-gray-400">
-              Share this link with the herder. It works once and expires in 15 minutes — no app install needed.
+              Share this link with the herder. It works once and expires in 15
+              minutes — no app install needed.
             </DialogDescription>
           </DialogHeader>
 
@@ -133,11 +152,15 @@ export function ShareCallLinkButton() {
           {mint && !loading && (
             <>
               <div className="flex flex-col items-center gap-4 py-4">
-                <div className={`p-3 bg-white rounded-xl ${expired ? "opacity-30" : ""}`}>
+                <div
+                  className={`p-3 bg-white rounded-xl ${expired ? "opacity-30" : ""}`}
+                >
                   <QRCodeSVG value={url} size={192} level="M" />
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  <Shield className={`w-3.5 h-3.5 ${expired ? "text-gray-600" : "text-green-500"}`} />
+                  <Shield
+                    className={`w-3.5 h-3.5 ${expired ? "text-gray-600" : "text-green-500"}`}
+                  />
                   <span className={expired ? "text-red-400" : "text-gray-400"}>
                     {expired
                       ? "This link has expired — generate a new one"
@@ -163,7 +186,11 @@ export function ShareCallLinkButton() {
                   className="border-gray-700 text-gray-200 hover:bg-gray-800"
                   data-testid="btn-copy-share-url"
                 >
-                  {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                  {copied ? (
+                    <Check className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                 </Button>
                 <Button
                   onClick={refresh}
@@ -178,7 +205,8 @@ export function ShareCallLinkButton() {
               </div>
 
               <div className="text-xs text-gray-500 leading-relaxed mt-2">
-                Once the recipient taps Accept, the link is burned — it can't be reused or shared further. Generate a new one for each call.
+                Once the recipient taps Accept, the link is burned — it can't be
+                reused or shared further. Generate a new one for each call.
               </div>
             </>
           )}
