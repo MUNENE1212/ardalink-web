@@ -4,6 +4,12 @@ All notable changes are documented here.
 
 ## [Unreleased]
 
+### Added
+- Phase 2: Multi-tenant browser context
+  - `dashboard/src/lib/tenant.ts` + `talk/src/lib/tenant.ts` — in-memory tenant context, `hasFlag`, `tenantHeaders`
+  - `dashboard/tests/tenant.test.ts` — vitest unit tests
+  - `docs/01-ARCHITECTURE.md` updated with multi-tenant model note
+
 ## [0.1.0] - 2026-06-21
 
 ### Added
