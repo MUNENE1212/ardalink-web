@@ -1,13 +1,27 @@
-import './index.css';
+import { Switch, Route, Router as WouterRouter } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Home from "@/pages/Home";
+import NotFound from "@/pages/not-found";
 
-export default function App() {
+const queryClient = new QueryClient();
+
+function Router() {
   return (
-    <main>
-      <h1>ArdaLink Talk</h1>
-      <p>
-        Skeleton v0.1.0 — browser voice + chat UI migrates in Phase 3 from
-        <code> MUNENE1212/ardalink-ai/artifacts/talk</code>.
-      </p>
-    </main>
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <Router />
+      </WouterRouter>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
