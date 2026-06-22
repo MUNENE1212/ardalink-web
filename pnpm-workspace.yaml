@@ -1,6 +1,7 @@
 packages:
   - dashboard
   - talk
+  - packages/*
 
 # Hoist dependencies to the workspace root for compatibility with
 # tools that expect a flat node_modules (vite, vitest, @vitejs/*).
