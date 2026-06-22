@@ -2,6 +2,10 @@ packages:
   - dashboard
   - talk
 
+# Hoist dependencies to the workspace root for compatibility with
+# tools that expect a flat node_modules (vite, vitest, @vitejs/*).
+nodeLinker: hoisted
+
 catalog:
   "@hookform/resolvers": ^3.10.0
   "@radix-ui/react-accordion": ^1.2.4
@@ -46,13 +50,19 @@ catalog:
   tailwind-merge: ^3.3.1
   tailwindcss: ^4.1.14
   vite: ^7.3.0
+  vitest: ^2.1.0
+  '@testing-library/react': ^16.1.0
+  jsdom: ^25.0.0
   wouter: ^3.3.5
   zod: ^3.25.0
 
 autoInstallPeers: false
 
+hoistPattern:
+  - '*'
+
 onlyBuiltDependencies:
-  - "@swc/core"
+  - '@swc/core'
   - esbuild
   - msw
   - unrs-resolver
