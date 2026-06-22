@@ -9,7 +9,9 @@
 - **Map tiles 403** → check `VITE_MAP_TILES_URL`.
 
 ## Backups
+
 Static assets; no state to back up.
 
 ## Disaster recovery
+
 See [archive/phase-0.5-backup.md](../archive/phase-0.5-backup.md).

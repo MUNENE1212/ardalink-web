@@ -4,11 +4,11 @@
 
 ## Threat model
 
-| Surface | Threat | Control |
-|---|---|---|
-| Realtime ephemeral key | Token theft | Short TTL, scoped to single call (Phase 8) |
-| Microphone capture | Unauthorized recording | Explicit user consent UI |
-| Local storage | Token persistence | httpOnly cookies for session, never localStorage |
+| Surface                | Threat                 | Control                                          |
+| ---------------------- | ---------------------- | ------------------------------------------------ |
+| Realtime ephemeral key | Token theft            | Short TTL, scoped to single call (Phase 8)       |
+| Microphone capture     | Unauthorized recording | Explicit user consent UI                         |
+| Local storage          | Token persistence      | httpOnly cookies for session, never localStorage |
 
 ## Secrets
 

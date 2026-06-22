@@ -35,10 +35,10 @@ Both apps read their OpenAPI hooks from
 
 ## What's in here
 
-| App | Path | Audience |
-|---|---|---|
+| App                    | Path         | Audience                                               |
+| ---------------------- | ------------ | ------------------------------------------------------ |
 | **Operator dashboard** | `dashboard/` | Internal — drought status, ground truth, call controls |
-| **Public Talk** | `talk/` | Anyone — browser voice + chat, no phone required |
+| **Public Talk**        | `talk/`      | Anyone — browser voice + chat, no phone required       |
 
 ## Repository layout
 

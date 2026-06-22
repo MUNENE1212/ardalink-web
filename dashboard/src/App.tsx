@@ -1,14 +1,35 @@
-import './index.css';
+import { Switch, Route, Router as WouterRouter } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import NotFound from "@/pages/not-found";
+import Dashboard from "@/pages/dashboard";
+import CallReceiver from "@/pages/call-receiver";
 
-export default function App() {
+const queryClient = new QueryClient();
+
+function Router() {
   return (
-    <main>
-      <h1>ArdaLink Operator Dashboard</h1>
-      <p>
-        Skeleton v0.1.0 — live components (WardMapLive, CallModal, CostRailsCard,
-        ShareCallLinkButton) migrate in Phase 3 from
-        <code> MUNENE1212/ardalink-ai/artifacts/dashboard</code>.
-      </p>
-    </main>
+    <Switch>
+      <Route path="/" component={Dashboard} />
+      <Route path="/call" component={CallReceiver} />
+      <Route path="/call/:token" component={CallReceiver} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
